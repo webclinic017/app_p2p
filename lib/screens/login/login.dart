@@ -1,9 +1,17 @@
+import 'package:app_p2p/components/loader.dart';
+import 'package:app_p2p/database/appDatabase.dart';
+import 'package:app_p2p/database/userData.dart';
 import 'package:app_p2p/localizations/appLocalizations.dart';
 import 'package:app_p2p/screens/home/home.dart';
+import 'package:app_p2p/screens/register/register.dart';
 import 'package:app_p2p/utilities/appColors.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 String? userID = "user1";
+UserData? currentUserData;
 
 class Login extends StatefulWidget {
   const Login({Key? key}) : super(key: key);
@@ -13,6 +21,15 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
+
+
+  String? _email;
+  String? _password;
+
+  bool _isLoading = false;
+  String _loadMessage = "";
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -70,10 +87,11 @@ class _LoginState extends State<Login> {
                             border: InputBorder.none,
                             hintText: loc(context, "email"),
                               hintStyle: TextStyle(color: AppColors.mediumGray,
-                              fontSize: 12)
+                              )
                           ),
-                          style: TextStyle(fontSize: 12),
                           onChanged: (value) {
+
+                            _email = value;
 
                           },
                         ),
@@ -103,11 +121,11 @@ class _LoginState extends State<Login> {
                                   border: InputBorder.none,
                                   hintText: loc(context, "password"),
                                   hintStyle: TextStyle(color: AppColors.mediumGray,
-                                  fontSize: 12)
+                                  )
                               ),
-                              style: TextStyle(fontSize: 12),
                               onChanged: (value) {
 
+                                _password = value;
                               },
                             ),
                           ),
@@ -117,7 +135,7 @@ class _LoginState extends State<Login> {
                             child: InkWell(
                               borderRadius: BorderRadius.circular(10),
                               child: Text(loc(context, "forgot"), style: TextStyle(fontWeight: FontWeight.w600,
-                              color: AppColors.primary, fontSize: 12),),
+                              color: AppColors.primary, ),),
                             ),
                           )
                         ],
@@ -155,7 +173,7 @@ class _LoginState extends State<Login> {
                                 borderRadius: BorderRadius.circular(50),
                                 onTap: () {
 
-                                  Navigator.push(context, MaterialPageRoute(builder:(context) => Home()));
+                                  login();
 
                                 },
                                 child: Row(
@@ -165,7 +183,7 @@ class _LoginState extends State<Login> {
                                     SizedBox(width: 20,),
 
                                     Text(loc(context, "login"), style: TextStyle( fontWeight: FontWeight.w600,
-                                    color: Colors.white),),
+                                    color: Colors.white, fontSize: 16),),
                                     SizedBox(width: 5,),
                                     Icon(Icons.arrow_forward, color: Colors.white,),
 
@@ -202,6 +220,8 @@ class _LoginState extends State<Login> {
                               borderRadius: BorderRadius.circular(10),
                               onTap: () {
 
+                                loadRegister();
+
                               },
                               child: Text(loc(context, "register"), style: TextStyle(fontWeight: FontWeight.w600, color: AppColors.primary),),
                             ),
@@ -217,7 +237,9 @@ class _LoginState extends State<Login> {
                   ],
                 ),
 
-            )
+            ),
+
+            _isLoading? Loader(loadMessage: _loadMessage,) : Container()
 
 
 
@@ -226,5 +248,127 @@ class _LoginState extends State<Login> {
         ),
       ),
     );
+  }
+
+  void loadRegister() {
+
+    Navigator.push(context, MaterialPageRoute(builder: (context) => Register()));
+  }
+
+
+
+  void login() {
+    var auth = FirebaseAuth.instance;
+    var firestore = FirebaseFirestore.instance;
+
+
+
+
+    if(_email == null) {
+
+      Fluttertoast.showToast(
+          msg: loc(context,  "the_email_is_required"),
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.red.withOpacity(0.4),
+          textColor: Colors.white.withOpacity(0.8),
+          fontSize: 16.0
+      );
+      return;
+    }else if((_email?.length as int) < 10) {
+      Fluttertoast.showToast(
+          msg: loc(context,  "the_email_is_invalid"),
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.red.withOpacity(0.4),
+          textColor: Colors.white.withOpacity(0.8),
+          fontSize: 16.0
+      );
+      return;
+    }
+
+
+    setState(() {
+      _isLoading = true;
+      _loadMessage = "${loc(context, "authenticating")}..";
+    });
+
+    auth.signInWithEmailAndPassword(email: _email as String, password: _password as String)
+    .then((result) {
+
+      userID = result.user?.uid;
+
+      firestore.collection(AppDatabase.users).doc(userID).get().then((doc) {
+
+        currentUserData = UserData.fromDoc(doc);
+
+        if(currentUserData?.active == false) {
+          Fluttertoast.showToast(
+              msg: loc(context,  "the_account_is_inactive"),
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.BOTTOM,
+              timeInSecForIosWeb: 1,
+              backgroundColor: Colors.black.withOpacity(0.4),
+              textColor: Colors.white.withOpacity(0.8),
+              fontSize: 16.0
+          );
+          return;
+        }
+
+        loadHome();
+
+      }).catchError((onError) {
+
+        print("Error loading user data: ${onError.toString()}");
+
+        setState(() {
+          _isLoading = false;
+        });
+
+      });
+
+
+
+    }).catchError((onError) {
+
+      setState(() {
+        _isLoading = false;
+      });
+
+      if(onError.toString().contains(AppDatabase.userNotFound)) {
+        Fluttertoast.showToast(
+            msg: loc(context,  "user_not_found"),
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.BOTTOM,
+            timeInSecForIosWeb: 1,
+            backgroundColor: Colors.black.withOpacity(0.4),
+            textColor: Colors.white.withOpacity(0.8),
+            fontSize: 16.0
+        );
+      }else {
+        Fluttertoast.showToast(
+            msg: loc(context,  "unknown_error"),
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.BOTTOM,
+            timeInSecForIosWeb: 1,
+            backgroundColor: Colors.black.withOpacity(0.4),
+            textColor: Colors.white.withOpacity(0.8),
+            fontSize: 16.0
+        );
+      }
+
+      print("Error authenticating user: ${onError.toString()}");
+    });
+
+
+
+
+  }
+
+
+  void loadHome () {
+    Navigator.push(context, MaterialPageRoute(builder: (context) => Home()));
   }
 }

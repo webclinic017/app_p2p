@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "987075043631",
+    "project_id": "byubi-69a43",
+    "storage_bucket": "byubi-69a43.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:987075043631:android:59182f506913fea45fc1da",
+        "android_client_info": {
+          "package_name": "com.example.app_p2p"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "987075043631-6cav154ablkovq18ae497j8ohujulfh1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBiMMPqZl-Ty_vtjL1cJcdKjhLpsb6OUHo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "987075043631-6cav154ablkovq18ae497j8ohujulfh1.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

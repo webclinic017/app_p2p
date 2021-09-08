@@ -77,7 +77,18 @@ class AppLocalizations {
       "new_chat" : "New Chat",
       "search_contact" : "Search contact",
       "enter_the_message" : "Enter the message",
-      "byubi" : "Byubi"
+      "byubi" : "Byubi",
+      "location_services_are_disabled" : "Location services are disabled",
+      "location_permissions_are_denied" : "Location permissions are denied",
+      "location_permissions_are_denied_forever" : "Location permissions are denied forever, we cannot request permissions",
+      "friends" : "Friends",
+      "nearby" : "Nearby",
+      "contacts" : "Contacts",
+      "load_more_uppercase" : "LOAD MORE",
+      "search_friends" : "Search friends",
+      "there_are_no_friends_to_show" : "There're no friends to show",
+      "search_users" : "Search users",
+      "there_are_no_users_to_show" : "There are no users to show"
 
 
     },
@@ -136,7 +147,18 @@ class AppLocalizations {
       "new_chat" : "Nuevo Chat",
       "search_contact" : "Buscar contacto",
       "enter_the_message" : "Ingresa el mensaje",
-      "byubi" : "Byubi"
+      "byubi" : "Byubi",
+      "location_services_are_disabled" : "Los servicios de ubicación están inactivos",
+      "location_permissions_are_denied" : "Los permisos de ubicación estan denegados",
+      "location_permissions_are_denied_forever" : "Los permisos de ubicación estan denegados permanentemente, no podemos solicitar los permisos",
+      "friends" : "Amigos",
+      "nearby" : "Cercanos",
+      "contacts" : "Contactos",
+      "load_more_uppercase" : "CARGAR MÁS",
+      "search_friends" : "Buscar amigos",
+      "there_are_no_friends_to_show" : "No hay amigos para mostrar",
+      "search_users" : "Buscar usuarios",
+      "there_are_no_users_to_show" : "No hay más usuarios para mostrar"
 
     }
   };

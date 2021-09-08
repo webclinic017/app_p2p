@@ -397,7 +397,7 @@ class _PhoneRegistrationState extends State<PhoneRegistration> {
       auth.createUserWithEmailAndPassword(email: email as String, password: password as String)
           .then((result) {
 
-        String newUserID = firestore.collection(AppDatabase.users).doc().id;
+        String newUserID = result.user?.uid as String;
 
         firestore.collection(AppDatabase.users).doc(newUserID).set({
           AppDatabase.id: newUserID,

@@ -1,4 +1,6 @@
+import 'package:app_p2p/components/messageItem.dart';
 import 'package:app_p2p/database/chatData.dart';
+import 'package:app_p2p/database/messageData.dart';
 import 'package:app_p2p/localizations/appLocalizations.dart';
 import 'package:app_p2p/screens/login/login.dart';
 import 'package:app_p2p/utilities/appColors.dart';
@@ -23,7 +25,11 @@ class _ConversationScreenState extends State<ConversationScreen> {
   String? otherName;
   String? otherImageUrl;
 
-  String? message;
+  String? _message;
+
+  List<Widget> _messages = [];
+
+  TextEditingController _messageController = TextEditingController();
 
   void loadOtherData() {
 
@@ -58,10 +64,12 @@ class _ConversationScreenState extends State<ConversationScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: AppColors.primary,
         leading: IconButton(onPressed: () {
           Navigator.pop(context);
         }, icon: Icon(Icons.arrow_back_ios, color: Colors.white,)),
 
+        centerTitle: true,
         title: Text(otherName != null? (otherName as String) : "-",
         style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),),
         
@@ -82,8 +90,18 @@ class _ConversationScreenState extends State<ConversationScreen> {
         child: Column(
           children: [
 
+            SizedBox(height: 20,),
+
             Expanded(
-              child: Container(),
+              child: Container(
+                width: double.infinity,
+                height: double.infinity,
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: _messages,
+                  ),
+                ),
+              ),
             ),
 
             Container(
@@ -103,6 +121,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
                     child: Container(
                       width: double.infinity,
                       height: 45,
+                      padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
                       decoration: BoxDecoration(
                         color: AppColors.form,
                         borderRadius: BorderRadius.circular(45),
@@ -117,8 +136,18 @@ class _ConversationScreenState extends State<ConversationScreen> {
                             hintText: loc(context, "enter_the_message"),
                             hintStyle: TextStyle(color: AppColors.mediumGray)
                           ),
+                          controller: _messageController,
                           onChanged: (value) {
-                            message = value;
+                            setState(() {
+                              _message = value;
+                            });
+                          },
+                          onFieldSubmitted: (value) {
+                            setState(() {
+                              _message = value;
+                            });
+                            sendMessage();
+                            _messageController.clear();
                           },
                         ),
                       ),
@@ -143,10 +172,11 @@ class _ConversationScreenState extends State<ConversationScreen> {
                       color: Colors.white.withOpacity(0.0),
                       child: InkWell(
                         borderRadius: BorderRadius.circular(45),
-                        onTap: () {
+                        onTap: _message != null?() {
 
                           sendMessage();
-                        },
+                          _messageController.clear();
+                        } : null,
                         child: Align(
                           alignment: Alignment.center,
                           child: Icon(Icons.send, color: AppColors.primary,),
@@ -171,5 +201,14 @@ class _ConversationScreenState extends State<ConversationScreen> {
 
   void sendMessage () {
 
+    setState(() {
+      _messages.add(MessageItem(data: MessageData(id: "message", chatID: "chat1",
+      message: _message,
+      senderID: userID, seen: false, created: DateTime.now()),));
+
+      _messages.add(SizedBox(height: 10,));
+    });
+
+    print("Message created!");
   }
 }

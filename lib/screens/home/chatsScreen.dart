@@ -1,6 +1,7 @@
 import 'package:app_p2p/components/chatItem.dart';
 import 'package:app_p2p/database/chatData.dart';
 import 'package:app_p2p/database/messageData.dart';
+import 'package:app_p2p/screens/home/conversationScreen.dart';
 import 'package:app_p2p/screens/home/newChat.dart';
 import 'package:app_p2p/utilities/appColors.dart';
 import 'package:flutter/material.dart';
@@ -46,7 +47,12 @@ class _ChatsScreenState extends State<ChatsScreen> {
                       ],
                       lastMessage: MessageData(id: "message1", chatID: "chat1",
                           message: "Hola tio",
-                          senderID: "user1", seen: false, created: DateTime.now())),),
+                          senderID: "user1", seen: false, created: DateTime.now())),
+                  onPressed: (data) {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => ConversationScreen(
+                      data: data,
+                    )));
+                  },),
 
                   SizedBox(height: 10,),
 

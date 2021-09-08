@@ -367,6 +367,9 @@ class _LoginState extends State<Login> {
               textColor: Colors.white.withOpacity(0.8),
               fontSize: 16.0
           );
+          setState(() {
+            _isLoading = false;
+          });
           return;
         }
 

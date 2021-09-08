@@ -77,6 +77,7 @@ class AppLocalizations {
       "new_chat" : "New Chat",
       "search_contact" : "Search contact",
       "enter_the_message" : "Enter the message",
+      "byubi" : "Byubi"
 
 
     },
@@ -135,6 +136,7 @@ class AppLocalizations {
       "new_chat" : "Nuevo Chat",
       "search_contact" : "Buscar contacto",
       "enter_the_message" : "Ingresa el mensaje",
+      "byubi" : "Byubi"
 
     }
   };

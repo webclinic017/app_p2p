@@ -39,10 +39,10 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin{
         title: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Image.asset("assets/airtven.png", width: 40, height: 40,),
 
 
-            Text(loc(context, "airtven"), style: TextStyle(color: Colors.white,
+
+            Text(loc(context, "byubi"), style: TextStyle(color: Colors.white,
                 fontWeight: FontWeight.w600, fontSize: 20),),
           ],
         ),

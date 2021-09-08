@@ -109,20 +109,25 @@ class _NewChatState extends State<NewChat> {
                             onChanged: (value) {
 
                               _searchQuery = value;
+                              setState(() {
+                                _searchResult = false;
+                              });
 
+                            },
+                            onFieldSubmitted: (value) {
+                              _searchQuery = value;
+                              searchContacts();
                             },
                           ),
                         ),
 
-                        !searchResult? IconButton(onPressed: () {
+                        !_searchResult? IconButton(onPressed: () {
 
                           searchContacts();
 
                         }, icon: Icon(Icons.search)) : IconButton(onPressed: () {
 
-                          setState(() {
-
-                          });
+                          showAllContacts();
                         }, icon: Icon(Icons.clear))
                       ],
                     ),
@@ -175,14 +180,14 @@ class _NewChatState extends State<NewChat> {
     }
 
     setState(() {
-      _loadingContacts = !_loadingContacts;
-      searchResult = false;
+      _rendererState = !_rendererState;
+      _searchResult = false;
       _searchQuery = null;
     });
 
   }
 
-  bool searchResult = false;
+  bool _searchResult = false;
   void searchContacts() {
 
     if(_searchQuery == null) {
@@ -196,7 +201,7 @@ class _NewChatState extends State<NewChat> {
     setState(() {
       _contactsItems.clear();
     });
-    for(Contact c in contacts.where((element) => element.name.toString().contains(_searchQuery as String))) {
+    for(Contact c in contacts.where((element) => element.displayName.toLowerCase().toString().contains(_searchQuery?.toLowerCase() as String))) {
       setState(() {
         _contactsItems.add(ContactItem(contact: c,));
         _contactsItems.add(SizedBox(height: 10,));
@@ -204,8 +209,8 @@ class _NewChatState extends State<NewChat> {
     }
 
     setState(() {
-      _loadingContacts = !_loadingContacts;
-      searchResult = true;
+      _rendererState = !_rendererState;
+      _searchResult = true;
     });
 
 

@@ -30,6 +30,51 @@ class _LoginState extends State<Login> {
   String _loadMessage = "";
 
 
+  bool _autoLogin = false;
+  void autoLogin() async{
+    var auth = FirebaseAuth.instance;
+    var firestore = FirebaseFirestore.instance;
+
+    setState(() {
+      _autoLogin = true;
+    });
+
+    if(auth.currentUser != null) {
+      userID = auth.currentUser?.uid;
+
+      if(currentUserData == null) {
+        var userDoc = await firestore.collection(AppDatabase.users).doc(userID).get();
+        currentUserData = UserData.fromDoc(userDoc);
+      }
+
+      setState(() {
+        _autoLogin = false;
+      });
+      loadHome();
+
+    }else {
+
+      setState(() {
+        _autoLogin = false;
+      });
+
+      loadHome();
+    }
+
+
+
+  }
+
+  @override
+  void initState() {
+
+    Future.delayed(Duration(milliseconds: 500), () {
+      autoLogin();
+    });
+    super.initState();
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -176,7 +221,7 @@ class _LoginState extends State<Login> {
                                   login();
 
                                 },
-                                child: Row(
+                                child: !_autoLogin? Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
 
@@ -190,7 +235,15 @@ class _LoginState extends State<Login> {
                                     SizedBox(width: 20,),
 
                                   ],
-                                ),
+                                ) : Row(
+                                  children: [
+                                    SizedBox(width: 20,),
+                                    FittedBox(
+                                      child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.white),),
+                                    ),
+                                    SizedBox(width: 20,),
+                                  ],
+                                )
                               ),
                             ),
                           )

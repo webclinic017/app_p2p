@@ -46,7 +46,7 @@ class _ChatItemState extends State<ChatItem> {
     return Container(
       width: double.infinity,
       height: 90,
-      margin: EdgeInsets.fromLTRB(30, 0, 30, 0),
+      margin: EdgeInsets.fromLTRB(20, 0, 20, 0),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(10),

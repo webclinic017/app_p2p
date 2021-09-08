@@ -1,6 +1,7 @@
 import 'package:app_p2p/components/chatItem.dart';
 import 'package:app_p2p/database/chatData.dart';
 import 'package:app_p2p/database/messageData.dart';
+import 'package:app_p2p/screens/home/newChat.dart';
 import 'package:app_p2p/utilities/appColors.dart';
 import 'package:flutter/material.dart';
 
@@ -26,7 +27,6 @@ class _ChatsScreenState extends State<ChatsScreen> {
           Container(
             width: double.infinity,
             height: double.infinity,
-            margin: EdgeInsets.fromLTRB(20, 0, 20, 0),
             child: SingleChildScrollView(
               child: Column(
                 children: [
@@ -168,6 +168,8 @@ class _ChatsScreenState extends State<ChatsScreen> {
                   child: InkWell(
                     borderRadius: BorderRadius.circular(60),
                     onTap: () {
+
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => NewChat()));
 
                     },
                     child: Align(

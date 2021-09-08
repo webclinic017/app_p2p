@@ -17,4 +17,5 @@ class AppDatabase {
   static String imageUrl = "imageUrl";
   static String active = "active";
 
+
 }

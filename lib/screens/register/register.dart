@@ -23,6 +23,9 @@ class _RegisterState extends State<Register> {
   String? _firstName;
   String? _lastName;
   String? _email;
+  String? _password;
+
+  bool _obscurePassword = false;
 
 
   @override
@@ -204,6 +207,59 @@ class _RegisterState extends State<Register> {
                       ),
                     ),
 
+                    SizedBox(height: 10,),
+
+                    Container(
+                      width: double.infinity,
+                      margin: EdgeInsets.fromLTRB(30, 0, 30, 0),
+                      child: Text(loc(context, "password"),),
+                    ),
+
+                    SizedBox(height: 5,),
+
+                    Container(
+                      width: double.infinity,
+                      height: 50,
+                      margin: EdgeInsets.fromLTRB(30, 0, 30, 0),
+                      padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
+                      decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(50),
+                          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05),
+                              spreadRadius: 1, blurRadius: 6, offset: Offset(0, 4))]
+                      ),
+                      child: Align(
+                        alignment: Alignment.center,
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: TextFormField(
+                                decoration: InputDecoration(
+                                    border: InputBorder.none,
+                                    hintText: loc(context, "enter_the_password"),
+                                    hintStyle: TextStyle(color: AppColors.mediumGray)
+                                ),
+                                obscureText: _obscurePassword,
+                                keyboardType: TextInputType.visiblePassword,
+                                onChanged: (value) {
+
+                                  _password = value;
+                                },
+                              ),
+                            ),
+
+                            IconButton(onPressed: () {
+
+                              setState(() {
+                                _obscurePassword = !_obscurePassword;
+                              });
+
+                            }, icon: Icon(_obscurePassword? Icons.visibility_off : Icons.visibility))
+                          ],
+                        )
+                      ),
+                    ),
+
 
                     SizedBox(height: 40,),
 
@@ -346,6 +402,31 @@ class _RegisterState extends State<Register> {
       return;
     }
 
+
+    if(_password == null) {
+      Fluttertoast.showToast(
+          msg: loc(context, "password_is_required"),
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.black.withOpacity(0.4),
+          textColor: Colors.white.withOpacity(0.8),
+          fontSize: 16.0
+      );
+      return;
+    }else if((_password?.length as int) < 6) {
+      Fluttertoast.showToast(
+          msg: loc(context, "password_too_short"),
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.black.withOpacity(0.4),
+          textColor: Colors.white.withOpacity(0.8),
+          fontSize: 16.0
+      );
+      return;
+    }
+
     setState(() {
       _isLoading = true;
       _loadMessage = "${loc(context, "loading_data")}..";
@@ -397,7 +478,10 @@ class _RegisterState extends State<Register> {
 
 
   void continueToPhoneRegistration () {
-    Navigator.push(context, MaterialPageRoute(builder: (context) => PhoneRegistration()));
+    Navigator.push(context, MaterialPageRoute(builder: (context) => PhoneRegistration(
+      firstName: _firstName, lastName: _lastName,
+      email: _email, password: _password,
+    )));
   }
 
 

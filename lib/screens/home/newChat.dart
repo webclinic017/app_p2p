@@ -44,6 +44,7 @@ class _NewChatState extends State<NewChat> with SingleTickerProviderStateMixin{
           Navigator.pop(context);
         }, icon: Icon(Icons.arrow_back_ios, color: Colors.white,)),
         bottom: TabBar(
+          indicatorColor: AppColors.secondary,
           controller: _tabController,
           tabs: [
             Tab(text: loc(context,  "friends"),),

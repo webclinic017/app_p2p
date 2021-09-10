@@ -3,7 +3,9 @@ import 'package:app_p2p/localizations/appLocalizations.dart';
 import 'package:app_p2p/screens/home/chatsScreen.dart';
 import 'package:app_p2p/screens/login/login.dart';
 import 'package:app_p2p/utilities/appColors.dart';
+import 'package:app_p2p/utilities/appUtilities.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geolocator/geolocator.dart';
@@ -121,10 +123,23 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin{
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return WillPopScope(child: Scaffold(
       appBar: AppBar(
         backgroundColor: AppColors.primary,
         leading: IconButton(onPressed: () {
+
+          AppUtilities.displayDialog(context, title: loc(context, "are_u_sure"),
+              content: loc(context, "do_you_want_to_logout"),
+              actions: [loc(context, "cancel_uppercase"),
+                loc(context, "yes_uppercase")],
+              callbacks: [() {
+
+                Navigator.pop(context);
+
+              }, () {
+                Navigator.pop(context);
+                logout();
+              }]);
 
         }, icon: Icon(Icons.arrow_back_ios, color: Colors.white,)),
         actions: [
@@ -146,6 +161,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin{
 
         bottom: TabBar(
           controller: _tabController,
+          indicatorColor: AppColors.secondary,
           onTap: (index) {
             setState(() {
               _selectedScreen = index;
@@ -166,22 +182,56 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin{
         children: [
 
           Container(
-            width: double.infinity,
-            height: double.infinity,
-            child: PageView(
-              controller: _pageController,
-              children: [
+              width: double.infinity,
+              height: double.infinity,
+              child: PageView(
+                controller: _pageController,
+                children: [
 
-                ChatsScreen(),
-                Container(),
-                Container()
+                  ChatsScreen(),
+                  Container(),
+                  Container()
 
-              ],
-            )
+                ],
+              )
           )
 
         ],
       ),
-    );
+    ), onWillPop: () async{
+
+      AppUtilities.displayDialog(context, title: loc(context, "are_u_sure"),
+      content: loc(context, "do_you_want_to_logout"),
+      actions: [loc(context, "cancel_uppercase"),
+      loc(context, "yes_uppercase")],
+      callbacks: [() {
+
+        Navigator.pop(context);
+
+      }, () {
+
+        Navigator.pop(context);
+        logout();
+      }]);
+
+
+
+      return false;
+    });
+  }
+
+
+  void logout() {
+    var auth = FirebaseAuth.instance;
+
+    auth.signOut().then((result) {
+      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => Login()), (route) => false);
+
+    }).catchError((onError) {
+
+      print("Error loging out: ${onError.toString()}");
+    });
+
+
   }
 }

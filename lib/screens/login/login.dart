@@ -58,7 +58,6 @@ class _LoginState extends State<Login> {
         _autoLogin = false;
       });
 
-      loadHome();
     }
 
 

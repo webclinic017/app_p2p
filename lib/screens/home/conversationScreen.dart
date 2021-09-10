@@ -33,7 +33,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
 
   void loadOtherData() {
 
-    for(Map<String, dynamic> userMap in (data?.involvedData as List<Map<String, dynamic>>)) {
+    for(Map<String, dynamic> userMap in (data?.involvedInfo as List<Map<String, dynamic>>)) {
 
       if(userID != userMap["id"]) {
         setState(() {

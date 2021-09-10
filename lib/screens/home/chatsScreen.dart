@@ -35,7 +35,7 @@ class _ChatsScreenState extends State<ChatsScreen> {
                   SizedBox(height: 20,),
 
                   ChatItem(data: ChatData(id: "chat1", involved: ["user1", "user2"],
-                      involvedData: [
+                      involvedInfo: [
                         {
                           "id" : "user1",
                           "name" : "Esteban Hernandez",
@@ -57,7 +57,7 @@ class _ChatsScreenState extends State<ChatsScreen> {
                   SizedBox(height: 10,),
 
                   ChatItem(data: ChatData(id: "chat2", involved: ["user1", "user4"],
-                      involvedData: [
+                      involvedInfo: [
                         {
                           "id" : "user1",
                           "name" : "Esteban Hernandez",
@@ -76,7 +76,7 @@ class _ChatsScreenState extends State<ChatsScreen> {
                   SizedBox(height: 10,),
 
                   ChatItem(data: ChatData(id: "chat2", involved: ["user1", "user4"],
-                      involvedData: [
+                      involvedInfo: [
                         {
                           "id" : "user1",
                           "name" : "Esteban Hernandez",
@@ -94,7 +94,7 @@ class _ChatsScreenState extends State<ChatsScreen> {
                   SizedBox(height: 10,),
 
                   ChatItem(data: ChatData(id: "chat6", involved: ["user1", "user4"],
-                      involvedData: [
+                      involvedInfo: [
                         {
                           "id" : "user1",
                           "name" : "Esteban Hernandez",
@@ -113,7 +113,7 @@ class _ChatsScreenState extends State<ChatsScreen> {
                   SizedBox(height: 10,),
 
                   ChatItem(data: ChatData(id: "chat3", involved: ["user1", "user3"],
-                      involvedData: [
+                      involvedInfo: [
                         {
                           "id" : "user1",
                           "name" : "Esteban Hernandez",
@@ -131,7 +131,7 @@ class _ChatsScreenState extends State<ChatsScreen> {
                   SizedBox(height: 10,),
 
                   ChatItem(data: ChatData(id: "chat4", involved: ["user1", "user5"],
-                      involvedData: [
+                      involvedInfo: [
                         {
                           "id" : "user1",
                           "name" : "Esteban Hernandez",

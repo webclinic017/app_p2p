@@ -2,11 +2,14 @@ import 'package:app_p2p/components/friendItem.dart';
 import 'package:app_p2p/components/loadMore.dart';
 import 'package:app_p2p/components/simpleUserItem.dart';
 import 'package:app_p2p/database/appDatabase.dart';
+import 'package:app_p2p/database/chatData.dart';
 import 'package:app_p2p/database/friendData.dart';
 import 'package:app_p2p/database/userData.dart';
 import 'package:app_p2p/localizations/appLocalizations.dart';
+import 'package:app_p2p/screens/home/conversationScreen.dart';
 import 'package:app_p2p/screens/login/login.dart';
 import 'package:app_p2p/utilities/appColors.dart';
+import 'package:app_p2p/utilities/appUtilities.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
@@ -18,6 +21,7 @@ class NearbyScreen extends StatefulWidget {
 }
 
 class _NearbyScreenState extends State<NearbyScreen> {
+
   int _loadLimit = 20;
   DocumentSnapshot? _lastDoc;
   bool _renderState = false;
@@ -29,7 +33,13 @@ class _NearbyScreenState extends State<NearbyScreen> {
 
   double maxKm = 15.0;
 
-  void loadNearby() {
+
+  bool _isLoading = false;
+  String _loadMessage = "";
+
+
+
+  void loadNearbyUsers() {
     var firestore = FirebaseFirestore.instance;
 
     if(currentUserData?.position == null) {
@@ -62,6 +72,90 @@ class _NearbyScreenState extends State<NearbyScreen> {
 
       for(var doc in query.docs) {
 
+        if(doc.id == userID) {
+          continue;
+        }
+
+        UserData userData =  UserData.fromDoc(doc);
+
+        setState(() {
+          _nearbyUsers.add(SimpleUserItem(data: userData, onPressed: (data) {
+            checkingChats(data);
+          },));
+          _nearbyUsers.add(SizedBox(height: 10,));
+        });
+
+        _lastDoc = doc;
+      }
+
+
+      if(query.docs.length >= _loadLimit) {
+        setState(() {
+
+          _nearbyUsers.add(LoadMore(onLoad: () {
+
+            loadMoreNearbyUsers();
+
+          },));
+        });
+      }
+
+      setState(() {
+        _renderState = !_renderState;
+        _loadingNearbyUsers = false;
+      });
+
+
+
+    }).catchError((onError) {
+
+      setState(() {
+        _loadingNearbyUsers = false;
+      });
+
+
+      print("Error loading friends: ${onError.toString()}");
+    });
+  }
+
+
+  void loadMoreNearbyUsers() {
+    var firestore = FirebaseFirestore.instance;
+
+    if(currentUserData?.position == null) {
+      return;
+    }
+
+    double minLat = (currentUserData?.position?.latitude as double) - ((maxKm/2.0)/111.0);
+    double maxLat = (currentUserData?.position?.latitude as double) + ((maxKm/2.0)/111.0);
+    double minLng = (currentUserData?.position?.longitude as double) - ((maxKm/2.0)/111.0);
+    double maxLng = (currentUserData?.position?.longitude as double) + ((maxKm/2.0)/111.0);
+
+    GeoPoint lesserGeopoint = GeoPoint(minLat, minLng);
+    GeoPoint greaterGeopoint = GeoPoint(maxLat, maxLng);
+
+    print("Min lat: ${minLat}, Max lat: ${maxLat}");
+
+    setState(() {
+      _loadingNearbyUsers = true;
+    });
+    firestore.collection(AppDatabase.users)
+        .where(AppDatabase.currentPosition, isGreaterThan: lesserGeopoint)
+        .where(AppDatabase.currentPosition, isLessThan: greaterGeopoint )
+        .orderBy(AppDatabase.currentPosition, descending: true)
+
+        .limit(_loadLimit).get().then((query) {
+
+      setState(() {
+        _nearbyUsers.clear();
+      });
+
+      for(var doc in query.docs) {
+
+        if(doc.id == userID) {
+          continue;
+        }
+
         UserData userData =  UserData.fromDoc(doc);
 
         setState(() {
@@ -78,7 +172,7 @@ class _NearbyScreenState extends State<NearbyScreen> {
 
           _nearbyUsers.add(LoadMore(onLoad: () {
 
-            loadMoreNearby();
+            loadMoreNearbyUsers();
 
           },));
         });
@@ -103,56 +197,76 @@ class _NearbyScreenState extends State<NearbyScreen> {
   }
 
 
-  void loadMoreNearby () {
+
+
+  void checkingChats(UserData data) {
     var firestore = FirebaseFirestore.instance;
-    firestore.collection(AppDatabase.users)
-        .orderBy(AppDatabase.created, descending: true)
-        .startAfterDocument(_lastDoc as DocumentSnapshot).limit(_loadLimit).get().then((query) {
 
-      setState(() {
-        _nearbyUsers.removeLast();
-      });
+    setState(() {
+      _isLoading = true;
+      _loadMessage = "${loc(context, "opening_chat")}..";
+    });
 
-      for(var doc in query.docs) {
+    firestore.collection(AppDatabase.chats)
+    .where(AppDatabase.involvedCode, arrayContainsAny: [
+      "${userID}-${data.id}", "${data.id}-${userID}"
+    ]).get().then((query) {
 
-        FriendData friendData = FriendData.fromDoc(doc);
-
+      if(query.docs.length <= 0) {
+        createChat(data);
         setState(() {
-          _nearbyUsers.add(FriendItem(data: friendData,));
-          _nearbyUsers.add(SizedBox(height: 10,));
+          _isLoading = false;
         });
-
-        _lastDoc = doc;
+        return;
       }
 
 
-      if(query.docs.length >= _loadLimit) {
-        setState(() {
 
-          _nearbyUsers.add(LoadMore(onLoad: () {
+      ChatData chatData = ChatData.fromDoc(query.docs.first);
 
-            loadMoreNearby();
-
-          },));
-        });
-      }
-
-      setState(() {
-        _renderState = !_renderState;
-      });
-
+      openChat(chatData);
 
 
     }).catchError((onError) {
 
+      setState(() {
+        _isLoading = false;
+      });
 
-      print("Error loading friends: ${onError.toString()}");
+      print("Error getting chat: ${onError.toString()}");
+
     });
+
+
+
+
+  }
+
+
+  void createChat (UserData data) {
+    var firestore = FirebaseFirestore.instance;
+
+    setState(() {
+      _isLoading = true;
+      _loadMessage = "${loc(context,  "creating_chat")}..";
+    });
+
+    firestore.collection(AppDatabase.chats).add({
+      AppDatabase.involvedCode: "${userID}"
+    });
+  }
+
+  void openChat(ChatData chatData) {
+
+    Navigator.push(context, MaterialPageRoute(builder: (context) => ConversationScreen(
+      data: chatData,
+    )));
+
   }
 
   @override
   void initState() {
-    loadNearby();
+    loadNearbyUsers();
     super.initState();
   }
 
@@ -209,7 +323,7 @@ class _NearbyScreenState extends State<NearbyScreen> {
 
                   }, icon: Icon(Icons.search)) : IconButton(onPressed: () {
 
-                    loadNearby();
+                    loadMoreNearbyUsers();
                   }, icon: Icon(Icons.clear))
                 ],
               ),
@@ -278,13 +392,31 @@ class _NearbyScreenState extends State<NearbyScreen> {
   bool _searchResult = false;
 
   void searchNearbyFriends() {
+    var firestore = FirebaseFirestore.instance;
+
+    if(currentUserData?.position == null) {
+      return;
+    }
+
     setState(() {
       _searchResult = false;
     });
-    var firestore = FirebaseFirestore.instance;
+
+    double minLat = (currentUserData?.position?.latitude as double) - ((maxKm/2.0)/111.0);
+    double maxLat = (currentUserData?.position?.latitude as double) + ((maxKm/2.0)/111.0);
+    double minLng = (currentUserData?.position?.longitude as double) - ((maxKm/2.0)/111.0);
+    double maxLng = (currentUserData?.position?.longitude as double) + ((maxKm/2.0)/111.0);
+
+    GeoPoint lesserGeopoint = GeoPoint(minLat, minLng);
+    GeoPoint greaterGeopoint = GeoPoint(maxLat, maxLng);
+
+    print("Min lat: ${minLat}, Max lat: ${maxLat}");
+
     firestore.collection(AppDatabase.users)
+        .where(AppDatabase.currentPosition, isGreaterThan: lesserGeopoint)
+        .where(AppDatabase.currentPosition, isLessThan: greaterGeopoint )
+        .orderBy(AppDatabase.currentPosition, descending: true)
         .where(AppDatabase.keywords, arrayContains: _searchQuery)
-        .orderBy(AppDatabase.created, descending: true)
         .limit(_loadLimit).get().then((query) {
 
       setState(() {
@@ -293,10 +425,14 @@ class _NearbyScreenState extends State<NearbyScreen> {
 
       for(var doc in query.docs) {
 
-        FriendData friendData = FriendData.fromDoc(doc);
+        if(doc.id == userID) {
+          continue;
+        }
+
+        UserData userData =  UserData.fromDoc(doc);
 
         setState(() {
-          _nearbyUsers.add(FriendItem(data: friendData,));
+          _nearbyUsers.add(SimpleUserItem(data: userData,));
           _nearbyUsers.add(SizedBox(height: 10,));
         });
 
@@ -309,7 +445,7 @@ class _NearbyScreenState extends State<NearbyScreen> {
 
           _nearbyUsers.add(LoadMore(onLoad: () {
 
-            searchMoreFriends();
+            loadMoreNearbyUsers();
 
           },));
         });
@@ -325,6 +461,7 @@ class _NearbyScreenState extends State<NearbyScreen> {
     }).catchError((onError) {
 
 
+
       print("Error loading friends: ${onError.toString()}");
     });
 
@@ -332,7 +469,7 @@ class _NearbyScreenState extends State<NearbyScreen> {
 
 
 
-  void searchMoreFriends () {
+  void searchMoreNearbyFriends () {
     var firestore = FirebaseFirestore.instance;
     firestore.collection(AppDatabase.users)
         .orderBy(AppDatabase.created, descending: true)
@@ -344,6 +481,10 @@ class _NearbyScreenState extends State<NearbyScreen> {
       });
 
       for(var doc in query.docs) {
+
+        if(doc.id == userID) {
+          continue;
+        }
 
         FriendData friendData = FriendData.fromDoc(doc);
 
@@ -361,7 +502,7 @@ class _NearbyScreenState extends State<NearbyScreen> {
 
           _nearbyUsers.add(LoadMore(onLoad: () {
 
-            loadMoreNearby();
+            loadMoreNearbyUsers();
 
           },));
         });

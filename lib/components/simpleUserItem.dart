@@ -5,7 +5,7 @@ class SimpleUserItem extends StatefulWidget {
 
   UserData? data;
   Function(UserData)? onPressed;
-  SimpleUserItem({this.data});
+  SimpleUserItem({this.data, this.onPressed});
 
   @override
   _SimpleUserItemState createState() => _SimpleUserItemState(

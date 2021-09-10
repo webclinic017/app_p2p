@@ -28,7 +28,7 @@ class _ChatItemState extends State<ChatItem> {
   @override
   void initState() {
 
-    for(Map<String, dynamic> map in (data?.involvedData as List<Map<String, dynamic>>) ) {
+    for(Map<String, dynamic> map in (data?.involvedInfo as List<Map<String, dynamic>>) ) {
 
       if(map["id"] != userID) {
         otherID = map["id"];

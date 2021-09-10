@@ -31,4 +31,52 @@ class AppUtilities {
   }
 
 
+  static List<String> generateKeywords (String base) {
+    List<String> result = [];
+    List<String> splits = base.toLowerCase().split(" ");
+    List<String> savedWords = [];
+    int currentIndex = 0;
+
+    for(int i = 0; i < splits.length; i ++) {
+      for(int j = 0; j <= splits[i].length; j ++) {
+        result.add(splits[i].substring(0, j));
+
+
+      }
+
+    }
+
+
+    for(int i = 0; i < splits.length; i ++) {
+      for(int j = 0; j <= splits[i].length; j ++) {
+        result.add((savedWords.length > 0? savedWords[currentIndex] + " ": "")  +  splits[i].substring(0, j));
+
+
+        if(j == splits[i].length) {
+
+          if(savedWords.length > 0) {
+            currentIndex ++;
+          }
+
+
+          savedWords.add(splits[i].substring(0, j));
+        }
+
+
+
+      }
+
+    }
+
+    result.removeWhere((element) => element == "");
+    result.removeWhere((element) => element == " ");
+
+    result.toSet().toList();
+
+    print("Base: $base,  KeywordsResult: $result");
+    return result;
+
+  }
+
+
 }

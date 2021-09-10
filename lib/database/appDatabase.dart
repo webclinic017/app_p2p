@@ -27,6 +27,20 @@ class AppDatabase {
 
   static String keywords = "keywords";
 
+  static String chats = "chats";
+  static String involvedCode = "involvedCode";
+  static String involved = "involved";
+  static String involvedInfo = "involvedInfo";
+  static String lastMessage = "lastMessage";
+
+
+  static String messages = "messages";
+  static String chatID = "chatID";
+  static String message  ="message";
+  static String senderID = "senderID";
+  static String seen = "seen";
+
+
 
 
 }

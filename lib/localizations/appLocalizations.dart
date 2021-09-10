@@ -88,7 +88,11 @@ class AppLocalizations {
       "search_friends" : "Search friends",
       "there_are_no_friends_to_show" : "There're no friends to show",
       "search_users" : "Search users",
-      "there_are_no_users_to_show" : "There are no users to show"
+      "there_are_no_users_to_show" : "There are no users to show",
+      "do_you_want_to_logout" : "Do you want to logout?",
+      "do_you_want_to_start_a_conversation_with" : "Do you want to start a conversation with",
+      "opening_chat" : "Opening chat",
+      "creating_chat" : "Creating chat"
 
 
     },
@@ -158,7 +162,11 @@ class AppLocalizations {
       "search_friends" : "Buscar amigos",
       "there_are_no_friends_to_show" : "No hay amigos para mostrar",
       "search_users" : "Buscar usuarios",
-      "there_are_no_users_to_show" : "No hay más usuarios para mostrar"
+      "there_are_no_users_to_show" : "No hay más usuarios para mostrar",
+      "do_you_want_to_logout" : "¿Quieres cerrar sesión?",
+      "do_you_want_to_start_a_conversation_with" : "¿Quieres iniciar una conversación con",
+      "opening_chat" : "Abriendo conversación",
+      "creating_chat" : "Creando chat"
 
     }
   };

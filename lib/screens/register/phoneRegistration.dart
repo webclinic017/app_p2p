@@ -399,6 +399,8 @@ class _PhoneRegistrationState extends State<PhoneRegistration> {
 
         String newUserID = result.user?.uid as String;
 
+        List<String> _keywords = AppUtilities.generateKeywords("${firstName} ${lastName} ${_phoneNumber} ${email}");
+
         firestore.collection(AppDatabase.users).doc(newUserID).set({
           AppDatabase.id: newUserID,
           AppDatabase.firstName: firstName,
@@ -406,7 +408,8 @@ class _PhoneRegistrationState extends State<PhoneRegistration> {
           AppDatabase.phoneNumber: _phoneNumber,
           AppDatabase.phoneCode: _phoneCode,
           AppDatabase.email: email,
-          AppDatabase.active: false
+          AppDatabase.active: false,
+          AppDatabase.keywords: _keywords
 
 
         }).then((res) async{

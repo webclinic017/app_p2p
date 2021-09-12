@@ -38,6 +38,7 @@ dependencies:
   code_input: ^2.0.0
   flutter_contacts: ^1.1.0+4
   geolocator: ^7.6.0
+  dio: ^4.0.0
 
 dev_dependencies:
   flutter_test:
@@ -63,6 +64,8 @@ flutter:
   assets:
     - assets/coin.png
     - assets/airtven.png
+    - assets/blank_inbox_email.png
+    - assets/byubi.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

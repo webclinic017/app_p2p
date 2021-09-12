@@ -1,21 +1,98 @@
 import 'package:app_p2p/components/chatItem.dart';
+import 'package:app_p2p/database/appDatabase.dart';
 import 'package:app_p2p/database/chatData.dart';
 import 'package:app_p2p/database/messageData.dart';
+import 'package:app_p2p/localizations/appLocalizations.dart';
 import 'package:app_p2p/screens/home/conversationScreen.dart';
 import 'package:app_p2p/screens/home/newChat.dart';
+import 'package:app_p2p/screens/login/login.dart';
 import 'package:app_p2p/utilities/appColors.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class ChatsScreen extends StatefulWidget {
 
+  Function(int)? onUnreadMessages;
+
+  ChatsScreen({this.onUnreadMessages});
+
 
   @override
-  _ChatsScreenState createState() => _ChatsScreenState();
+  _ChatsScreenState createState() => _ChatsScreenState(onUnreadMessages: onUnreadMessages);
 }
 
 class _ChatsScreenState extends State<ChatsScreen> {
 
+  Function(int)? onUnreadMessages;
 
+  _ChatsScreenState({this.onUnreadMessages});
+
+
+  int _loadLimit = 20;
+  List<Widget> _chats = [];
+
+  bool _loadingChats = false;
+  bool renderState = false;
+
+  int _unreadMessages = 0;
+
+  void loadChats() {
+    var firestore = FirebaseFirestore.instance;
+
+    setState(() {
+      _loadingChats = true;
+      _unreadMessages = 0;
+    });
+
+    firestore.collection(AppDatabase.chats).where(
+      AppDatabase.involved, arrayContains: userID
+    ).orderBy(AppDatabase.updated, descending: true).limit(_loadLimit).snapshots().listen((event) {
+
+      setState(() {
+        _chats.clear();
+        _chats.add(SizedBox(height: 20,));
+      });
+      for(var doc in event.docs) {
+        ChatData chatData = ChatData.fromDoc(doc);
+
+        setState(() {
+          _chats.add(ChatItem(data: chatData, onPressed: (data) {
+
+            Navigator.push(context, MaterialPageRoute(builder: (context) => ConversationScreen(data: data,
+            onBack: () {
+
+              loadChats();
+            }, )));
+
+          }, onUnreadMessages: (value) {
+            setState(() {
+              _unreadMessages += value;
+            });
+          }, ));
+          _chats.add(SizedBox(height: 10,));
+        });
+      }
+
+      setState(() {
+        _loadingChats = false;
+        renderState = !renderState;
+      });
+
+    }).onError((handleError) {
+
+      setState(() {
+        _loadingChats = false;
+      });
+
+      print("Error loading chats: ${handleError.toString()}");
+    });
+  }
+
+  @override
+  void initState() {
+    loadChats();
+    super.initState();
+  }
 
 
   @override
@@ -28,128 +105,58 @@ class _ChatsScreenState extends State<ChatsScreen> {
           Container(
             width: double.infinity,
             height: double.infinity,
-            child: SingleChildScrollView(
+            child: !_loadingChats? (_chats.length > 0? (renderState? SingleChildScrollView(
               child: Column(
-                children: [
-
-                  SizedBox(height: 20,),
-
-                  ChatItem(data: ChatData(id: "chat1", involved: ["user1", "user2"],
-                      involvedInfo: [
-                        {
-                          "id" : "user1",
-                          "name" : "Esteban Hernandez",
-                        },
-                        {
-                          "id" : "user2",
-                          "name" : "Alejandro Hernandez",
-                        }
-                      ],
-                      lastMessage: MessageData(id: "message1", chatID: "chat1",
-                          message: "Hola tio",
-                          senderID: "user1", seen: false, created: DateTime.now())),
-                  onPressed: (data) {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => ConversationScreen(
-                      data: data,
-                    )));
-                  },),
-
-                  SizedBox(height: 10,),
-
-                  ChatItem(data: ChatData(id: "chat2", involved: ["user1", "user4"],
-                      involvedInfo: [
-                        {
-                          "id" : "user1",
-                          "name" : "Esteban Hernandez",
-                        },
-                        {
-                          "id" : "user2",
-                          "name" : "Carlos Perez",
-                        }
-                      ],
-                      lastMessage: MessageData(id: "message1", chatID: "chat2",
-                          message: "¿Cuando podemos ir a tomar algo?",
-                          senderID: "user1", seen: false, created: DateTime.now().subtract(Duration(minutes: 20)))),),
-
-
-
-                  SizedBox(height: 10,),
-
-                  ChatItem(data: ChatData(id: "chat2", involved: ["user1", "user4"],
-                      involvedInfo: [
-                        {
-                          "id" : "user1",
-                          "name" : "Esteban Hernandez",
-                        },
-                        {
-                          "id" : "user2",
-                          "name" : "Carlos Perez",
-                        }
-                      ],
-                      lastMessage: MessageData(id: "message1", chatID: "chat2",
-                          message: "¿Cuando podemos ir a tomar algo?",
-                          senderID: "user1", seen: false, created: DateTime.now().subtract(Duration(minutes: 36)))),),
-
-
-                  SizedBox(height: 10,),
-
-                  ChatItem(data: ChatData(id: "chat6", involved: ["user1", "user4"],
-                      involvedInfo: [
-                        {
-                          "id" : "user1",
-                          "name" : "Esteban Hernandez",
-                        },
-                        {
-                          "id" : "user4",
-                          "name" : "Olivarez Figueroa",
-                        }
-                      ],
-                      lastMessage: MessageData(id: "message1", chatID: "chat6",
-                          message: "Que maravilla lo que acabas de hacer",
-                          senderID: "user1", seen: false, created: DateTime.now().subtract(Duration(minutes: 45)))),
-                    pendingMessages: 2,),
-
-
-                  SizedBox(height: 10,),
-
-                  ChatItem(data: ChatData(id: "chat3", involved: ["user1", "user3"],
-                      involvedInfo: [
-                        {
-                          "id" : "user1",
-                          "name" : "Esteban Hernandez",
-                        },
-                        {
-                          "id" : "user3",
-                          "name" : "Adriana Rodriguez",
-                        }
-                      ],
-                      lastMessage: MessageData(id: "message1", chatID: "chat3",
-                          message: "Tenemos algo pendiente",
-                          senderID: "user1", seen: false, created: DateTime.now().subtract(Duration(minutes: 47)))),
-                    pendingMessages: 4,),
-
-                  SizedBox(height: 10,),
-
-                  ChatItem(data: ChatData(id: "chat4", involved: ["user1", "user5"],
-                      involvedInfo: [
-                        {
-                          "id" : "user1",
-                          "name" : "Esteban Hernandez",
-                        },
-                        {
-                          "id" : "user5",
-                          "name" : "Fernando M",
-                        }
-                      ],
-                      lastMessage: MessageData(id: "message1", chatID: "chat4",
-                          message: "Esto esta genial colega",
-                          senderID: "user1", seen: false, created: DateTime.now().subtract(Duration(minutes: 48)))),
-                    pendingMessages: 10,),
-
-
-
-                ],
+                children: _chats,
               ),
+            ) : Container(
+              child: SingleChildScrollView(
+                child: Column(
+                  children: _chats,
+                ),
+              ),
+            )) : Column(
+              children: [
+
+                SizedBox(height: 20,),
+
+                Container(
+                  width: double.infinity,
+                  height: 150,
+                  child: Align(
+                    alignment: Alignment.center,
+                    child: Image.asset("assets/blank_inbox_email.png", width: 150,
+                    height: 150,),
+                  ),
+                ),
+
+                SizedBox(height: 20,),
+
+                Container(
+                  width: double.infinity,
+                  child: Text(loc(context,  "you_dont_have_chats_yet"),
+                  style: TextStyle(fontWeight: FontWeight.w600,
+                  color: AppColors.mediumGray),
+                  textAlign: TextAlign.center,),
+                )
+
+
+              ],
+            )) : Column(
+              children: [
+                SizedBox(height: 20,),
+
+                Container(
+                  width: double.infinity,
+                  height: 40,
+                  child: Align(
+                    alignment: Alignment.center,
+                    child: FittedBox(
+                      child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),),
+                    ),
+                  ),
+                )
+              ],
             )
           ),
 

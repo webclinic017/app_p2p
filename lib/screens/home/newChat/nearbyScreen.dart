@@ -1,9 +1,11 @@
 import 'package:app_p2p/components/friendItem.dart';
 import 'package:app_p2p/components/loadMore.dart';
+import 'package:app_p2p/components/loader.dart';
 import 'package:app_p2p/components/simpleUserItem.dart';
 import 'package:app_p2p/database/appDatabase.dart';
 import 'package:app_p2p/database/chatData.dart';
 import 'package:app_p2p/database/friendData.dart';
+import 'package:app_p2p/database/messageData.dart';
 import 'package:app_p2p/database/userData.dart';
 import 'package:app_p2p/localizations/appLocalizations.dart';
 import 'package:app_p2p/screens/home/conversationScreen.dart';
@@ -12,6 +14,7 @@ import 'package:app_p2p/utilities/appColors.dart';
 import 'package:app_p2p/utilities/appUtilities.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class NearbyScreen extends StatefulWidget {
 
@@ -208,20 +211,19 @@ class _NearbyScreenState extends State<NearbyScreen> {
     });
 
     firestore.collection(AppDatabase.chats)
-    .where(AppDatabase.involvedCode, arrayContainsAny: [
-      "${userID}-${data.id}", "${data.id}-${userID}"
-    ]).get().then((query) {
+    .where(AppDatabase.involvedCode, arrayContains: "${userID}-${data.id}").get().then((query) {
 
       if(query.docs.length <= 0) {
         createChat(data);
-        setState(() {
-          _isLoading = false;
-        });
+
         return;
       }
 
 
 
+      setState(() {
+        _isLoading = false;
+      });
       ChatData chatData = ChatData.fromDoc(query.docs.first);
 
       openChat(chatData);
@@ -251,8 +253,54 @@ class _NearbyScreenState extends State<NearbyScreen> {
       _loadMessage = "${loc(context,  "creating_chat")}..";
     });
 
-    firestore.collection(AppDatabase.chats).add({
-      AppDatabase.involvedCode: "${userID}"
+    var now = Timestamp.now();
+
+    ChatData newChatData = ChatData(involvedCode: [
+      "${userID}-${data.id}",
+      "${data.id}-${userID}"
+    ],
+    involved:  [
+      userID as String, data.id as String
+    ],
+    involvedInfo: [
+      {
+        "id" : userID,
+        "name" : "${currentUserData?.firstName} ${currentUserData?.lastName}",
+        "imageUrl" : "${currentUserData?.imageUrl}"
+      },
+      {
+        "id" : data.id,
+        "name" : "${data.firstName} ${data.lastName}",
+        "imageUrl" : "${data.imageUrl}"
+      },
+    ],
+    lastMessage: null,
+    created: now.toDate(),
+    updated: now.toDate());
+
+    firestore.collection(AppDatabase.chats).add(newChatData.toMap()).then((result) {
+
+      setState(() {
+        _isLoading = false;
+      });
+
+      openChat(newChatData);
+
+
+    }).catchError((onError) {
+
+      print("Error creating chat: ${onError.toString()}");
+
+      Fluttertoast.showToast(
+          msg: loc(context, "something_went_wrong"),
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.black.withOpacity(0.4),
+          textColor: Colors.white.withOpacity(0.8),
+          fontSize: 16.0
+      );
+
     });
   }
 
@@ -275,116 +323,126 @@ class _NearbyScreenState extends State<NearbyScreen> {
     return Container(
       width: double.infinity,
       height: double.infinity,
-      child: Column(
+      child: Stack(
         children: [
-
-          SizedBox(height: 20,),
-
           Container(
             width: double.infinity,
-            height: 50,
-            margin: EdgeInsets.fromLTRB(20, 0, 20, 0),
-            padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
-            decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(50),
-                boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05),
-                    spreadRadius: 1, blurRadius: 6, offset: Offset(0, 6))]
-            ),
-            child: Align(
-              alignment: Alignment.center,
-              child: Row(
-                children: [
-                  Expanded(
-                    child: TextFormField(
-                      decoration: InputDecoration(
-                          border: InputBorder.none,
-                          hintText: loc(context, "search_users"),
-                          hintStyle: TextStyle(color: AppColors.mediumGray)
-                      ),
-                      onChanged: (value) {
+            height: double.infinity,
+            child: Column(
+              children: [
 
-                        _searchQuery = value;
-                        setState(() {
-                          _searchResult = false;
-                        });
+                SizedBox(height: 20,),
 
-                      },
-                      onFieldSubmitted: (value) {
-                        _searchQuery = value;
-                        searchNearbyFriends();
-                      },
+                Container(
+                  width: double.infinity,
+                  height: 50,
+                  margin: EdgeInsets.fromLTRB(20, 0, 20, 0),
+                  padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
+                  decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(50),
+                      boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05),
+                          spreadRadius: 1, blurRadius: 6, offset: Offset(0, 6))]
+                  ),
+                  child: Align(
+                    alignment: Alignment.center,
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: TextFormField(
+                            decoration: InputDecoration(
+                                border: InputBorder.none,
+                                hintText: loc(context, "search_users"),
+                                hintStyle: TextStyle(color: AppColors.mediumGray)
+                            ),
+                            onChanged: (value) {
+
+                              _searchQuery = value;
+                              setState(() {
+                                _searchResult = false;
+                              });
+
+                            },
+                            onFieldSubmitted: (value) {
+                              _searchQuery = value;
+                              searchNearbyFriends();
+                            },
+                          ),
+                        ),
+
+                        !_searchResult? IconButton(onPressed: () {
+
+                          searchNearbyFriends();
+
+                        }, icon: Icon(Icons.search)) : IconButton(onPressed: () {
+
+                          loadMoreNearbyUsers();
+                        }, icon: Icon(Icons.clear))
+                      ],
                     ),
                   ),
+                ),
 
-                  !_searchResult? IconButton(onPressed: () {
+                SizedBox(height: 20,),
 
-                    searchNearbyFriends();
 
-                  }, icon: Icon(Icons.search)) : IconButton(onPressed: () {
+                Expanded(
+                  child: _loadingNearbyUsers? Column(
+                    children: [
+                      SizedBox(height: 20,),
 
-                    loadMoreNearbyUsers();
-                  }, icon: Icon(Icons.clear))
-                ],
-              ),
+                      Container(
+                        width: double.infinity,
+                        height: 40,
+                        child: Align(
+                          alignment: Alignment.center,
+                          child: FittedBox(
+                            child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),),
+                          ),
+                        ),
+                      )
+                    ],
+                  ) : (_nearbyUsers.length > 0? (
+                      _renderState? SingleChildScrollView(
+                        child: Column(
+                          children: _nearbyUsers,
+                        ),
+                      ) : Container(
+                        child: SingleChildScrollView(
+                          child: Column(
+                            children: _nearbyUsers,
+                          ),
+                        ),
+                      )
+                  ) : Column(
+                    children: [
+
+                      SizedBox(height: 20,),
+
+                      Container(
+                        width: double.infinity,
+                        margin: EdgeInsets.fromLTRB(20, 0, 20, 0),
+                        child: Align(
+                          alignment: Alignment.center,
+                          child: Text(loc(context, "there_are_no_users_to_show"),
+                            style: TextStyle(color: AppColors.mediumGray,
+                                fontWeight: FontWeight.w600),
+                            textAlign: TextAlign.center,),
+                        ),
+                      )
+
+                    ],
+                  )),
+                )
+
+
+              ],
             ),
           ),
 
-          SizedBox(height: 20,),
-
-
-          Expanded(
-            child: _loadingNearbyUsers? Column(
-              children: [
-                SizedBox(height: 20,),
-
-                Container(
-                  width: double.infinity,
-                  height: 40,
-                  child: Align(
-                    alignment: Alignment.center,
-                    child: FittedBox(
-                      child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),),
-                    ),
-                  ),
-                )
-              ],
-            ) : (_nearbyUsers.length > 0? (
-                _renderState? SingleChildScrollView(
-                  child: Column(
-                    children: _nearbyUsers,
-                  ),
-                ) : Container(
-                  child: SingleChildScrollView(
-                    child: Column(
-                      children: _nearbyUsers,
-                    ),
-                  ),
-                )
-            ) : Column(
-              children: [
-
-                SizedBox(height: 20,),
-
-                Container(
-                  width: double.infinity,
-                  margin: EdgeInsets.fromLTRB(20, 0, 20, 0),
-                  child: Align(
-                    alignment: Alignment.center,
-                    child: Text(loc(context, "there_are_no_users_to_show"),
-                      style: TextStyle(color: AppColors.mediumGray,
-                          fontWeight: FontWeight.w600),
-                      textAlign: TextAlign.center,),
-                  ),
-                )
-
-              ],
-            )),
-          )
-
-
+          _isLoading? Loader(loadMessage: _loadMessage,) : Container()
         ],
-      ),
+      )
     );
   }
 

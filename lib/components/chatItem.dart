@@ -1,18 +1,23 @@
+import 'package:app_p2p/database/appDatabase.dart';
 import 'package:app_p2p/database/chatData.dart';
+import 'package:app_p2p/screens/home/conversationScreen.dart';
 import 'package:app_p2p/screens/login/login.dart';
 import 'package:app_p2p/utilities/appColors.dart';
 import 'package:app_p2p/utilities/appUtilities.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class ChatItem extends StatefulWidget {
 
   ChatData? data;
   Function(ChatData)? onPressed;
-  int? pendingMessages;
-  ChatItem({this.data, this.onPressed, this.pendingMessages});
+  Function(int)? onUnreadMessages;
+
+  ChatItem({this.data, this.onPressed, this.onUnreadMessages});
 
   @override
-  _ChatItemState createState() => _ChatItemState(data: data, onPressed: onPressed, pendingMessages: pendingMessages);
+  _ChatItemState createState() => _ChatItemState(data: data, onPressed: onPressed,
+  onUnreadMessages: onUnreadMessages);
 }
 
 class _ChatItemState extends State<ChatItem> {
@@ -20,7 +25,9 @@ class _ChatItemState extends State<ChatItem> {
   ChatData? data;
   Function(ChatData)? onPressed;
   int? pendingMessages;
-  _ChatItemState({this.data, this.onPressed, this.pendingMessages});
+  Function(int)? onUnreadMessages;
+
+  _ChatItemState({this.data, this.onPressed, this.onUnreadMessages});
 
   String? otherID;
   String? otherName;
@@ -38,7 +45,30 @@ class _ChatItemState extends State<ChatItem> {
 
 
     }
+
+    loadUnreadMessages();
     super.initState();
+  }
+
+  void loadUnreadMessages() {
+    var firestore = FirebaseFirestore.instance;
+
+    firestore.collection(AppDatabase.chats).doc(data?.id)
+    .collection(AppDatabase.messages).where(AppDatabase.senderID, isNotEqualTo: userID)
+        .where(AppDatabase.seen, isEqualTo: false).limit(99).get().then((query) {
+
+     setState(() {
+       pendingMessages = query.docs.length;
+     });
+
+     onUnreadMessages?.call(pendingMessages as int);
+
+
+    }).catchError((onError) {
+
+      print("Error loading unread messages: ${onError.toString()}");
+    });
+
   }
 
   @override
@@ -60,6 +90,8 @@ class _ChatItemState extends State<ChatItem> {
           onTap: () {
 
             onPressed?.call(data as ChatData);
+
+
 
           },
           child: Row(
@@ -109,7 +141,7 @@ class _ChatItemState extends State<ChatItem> {
                             Expanded(
                               child: Container(
                                 width: double.infinity,
-                                child: Text(data?.lastMessage?.message as String,
+                                child: Text(data?.lastMessage?.message != null? (data?.lastMessage?.message as String) : "-",
                                   style: TextStyle(color: AppColors.mediumGray),
                                   overflow: TextOverflow.ellipsis,),
                               )

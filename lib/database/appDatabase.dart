@@ -4,6 +4,11 @@
 
 class AppDatabase {
 
+
+  static String apiToken = "613bdc0ab7cab4.49437326";
+  static String historicalDataEndPoint = "https://eodhistoricaldata.com/api/real-time/";
+  static String historicalDataHeaders = "&fmt=json";
+
   static String userNotFound = "firebase_auth/user-not-found";
 
   static String users = "users";
@@ -39,6 +44,24 @@ class AppDatabase {
   static String message  ="message";
   static String senderID = "senderID";
   static String seen = "seen";
+
+  static String balances = "balances";
+  static String amount = "amount";
+  static String currencyName = "currencyName";
+  static String currencyCode = "currencyCode";
+
+
+  static String recentExchangeRates = "recentExchangeRates";
+  static String code = "code";
+  static String time = "time";
+  static String open = "open";
+  static String high = "high";
+  static String low = "low";
+  static String close = "close";
+  static String volume = "volume";
+  static String previousClose = "previousClose";
+  static String change = "change";
+  static String changeP = "change_p";
 
 
 

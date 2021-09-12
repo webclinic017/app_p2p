@@ -203,7 +203,7 @@ class _LoginState extends State<Login> {
                               gradient: LinearGradient(
                                 colors: [
                                   AppColors.secondary,
-                                  AppColors.primary
+                                  AppColors.accent
                                 ],
                               ),
                               boxShadow: [BoxShadow(color: AppColors.primary.withOpacity(0.3),

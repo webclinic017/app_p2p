@@ -1,6 +1,7 @@
 
 
 import 'package:app_p2p/database/appDatabase.dart';
+import 'package:app_p2p/database/balanceData.dart';
 import 'package:app_p2p/database/positionData.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -18,8 +19,12 @@ class UserData {
   GeoPoint? position;
 
 
+
+
+
+
   UserData({this.id, this.firstName, this.lastName, this.phoneNumber, this.phoneCode,
-  this.email, this.imagePath, this.imageUrl});
+  this.email, this.imagePath, this.imageUrl, });
 
   UserData.fromDoc(DocumentSnapshot<Map<String, dynamic>> doc) {
     id = doc.data()?[AppDatabase.id];
@@ -37,6 +42,8 @@ class UserData {
     }catch(e) {
       position = null;
     }
+
+
 
 
 

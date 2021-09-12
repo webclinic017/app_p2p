@@ -1,6 +1,7 @@
 import 'package:app_p2p/database/appDatabase.dart';
 import 'package:app_p2p/localizations/appLocalizations.dart';
 import 'package:app_p2p/screens/home/chatsScreen.dart';
+import 'package:app_p2p/screens/home/wallet/wallet.dart';
 import 'package:app_p2p/screens/login/login.dart';
 import 'package:app_p2p/utilities/appColors.dart';
 import 'package:app_p2p/utilities/appUtilities.dart';
@@ -153,7 +154,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin{
 
 
 
-            Text(loc(context, "byubi"), style: TextStyle(color: Colors.white,
+            Text(currentUserData != null? "${currentUserData?.firstName} ${currentUserData?.lastName}" : "", style: TextStyle(color: Colors.white,
                 fontWeight: FontWeight.w600, fontSize: 20),),
           ],
         ),
@@ -189,7 +190,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin{
                 children: [
 
                   ChatsScreen(),
-                  Container(),
+                  Wallet(),
                   Container()
 
                 ],

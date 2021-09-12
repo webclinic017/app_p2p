@@ -41,7 +41,7 @@ void loadContacts() async{
         _contactsItems.add(SizedBox(height: 10,));
       });
 
-      print("Contact loaded: ${c.name}");
+     // print("Contact loaded: ${c.name}");
 
     }
 

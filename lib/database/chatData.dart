@@ -7,7 +7,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class ChatData {
 
   String? id;
-  String? involvedCode;
+  List<String>? involvedCode;
   List<String>? involved;
   List<Map<String, dynamic>>? involvedInfo;
   MessageData? lastMessage;
@@ -20,8 +20,14 @@ class ChatData {
   ChatData.fromDoc(DocumentSnapshot<Map<String, dynamic>> doc) {
 
     id = doc.id;
-    involvedCode = doc.data()?[AppDatabase.involvedCode];
 
+    List<dynamic>? involvedCodeData = doc.data()?[AppDatabase.involvedCode];
+    involvedCode = [];
+    if(involvedCodeData != null) {
+      for(String code in involvedCodeData) {
+        involvedCode?.add(code);
+      }
+    }
     List<dynamic> involvedData = doc.data()?[AppDatabase.involved];
 
     involved = [];
@@ -49,5 +55,14 @@ class ChatData {
 
 
   }
+
+  Map<String, dynamic> toMap() => {
+    AppDatabase.involvedCode: involvedCode,
+    AppDatabase.involved: involved,
+    AppDatabase.involvedInfo: involvedInfo,
+    AppDatabase.lastMessage: lastMessage,
+    AppDatabase.created: created,
+    AppDatabase.updated: updated
+  };
 
 }

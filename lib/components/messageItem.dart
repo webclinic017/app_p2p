@@ -1,28 +1,32 @@
+import 'package:app_p2p/database/appDatabase.dart';
 import 'package:app_p2p/database/messageData.dart';
 import 'package:app_p2p/screens/login/login.dart';
 import 'package:app_p2p/utilities/appColors.dart';
 import 'package:app_p2p/utilities/appUtilities.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class MessageItem extends StatefulWidget {
 
   MessageData? data;
+  String? id;
 
-  MessageItem({this.data});
+  MessageItem({this.data, this.id});
 
   @override
   _MessageItemState createState() => _MessageItemState(
-    data: data
+    data: data, id: id
   );
 }
 
 class _MessageItemState extends State<MessageItem> {
 
   MessageData? data;
-  _MessageItemState({this.data});
+  String? id;
+  _MessageItemState({this.data, this.id});
 
-  bool _sendingMessage = false;
+
 
 
 
@@ -37,13 +41,25 @@ class _MessageItemState extends State<MessageItem> {
 
 
 
-      _sendingMessage? Container(
+      _creatingMessage? Container(
         width: 35,
         height: 35,
         child: FittedBox(
           child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),),
         ),
-      ) : Container(),
+      ) : (data?.seen == true? Row(
+        children: [
+          Icon(Icons.check, color: AppColors.primary,),
+          SizedBox(width: 2,),
+          Icon(Icons.check, color: AppColors.primary,)
+        ],
+      ) : Row(
+        children: [
+          Icon(Icons.check, color: AppColors.mediumGray,),
+          SizedBox(width: 2,),
+          Icon(Icons.check, color: AppColors.mediumGray,)
+        ],
+      )),
 
       SizedBox(width: 10,),
 
@@ -55,7 +71,7 @@ class _MessageItemState extends State<MessageItem> {
 
 
       ConstrainedBox(
-          constraints: BoxConstraints(minHeight: 50, minWidth: 30, maxWidth: 250),
+          constraints: BoxConstraints(minHeight: 50, minWidth: 30, maxWidth: 200),
           child: Container(
             padding: EdgeInsets.fromLTRB(0, 15, 0, 15),
             decoration: BoxDecoration(
@@ -83,7 +99,7 @@ class _MessageItemState extends State<MessageItem> {
       SizedBox(width: 20,),
 
       ConstrainedBox(
-          constraints: BoxConstraints(minHeight: 50, minWidth: 30, maxWidth: 250),
+          constraints: BoxConstraints(minHeight: 50, minWidth: 30, maxWidth: 200),
           child: Container(
             padding: EdgeInsets.fromLTRB(0, 15, 0, 15),
             decoration: BoxDecoration(
@@ -117,7 +133,41 @@ class _MessageItemState extends State<MessageItem> {
   );
 
 
+
   bool get isMine => data?.senderID == userID;
+
+
+  @override
+  void initState() {
+
+    if(id != null) {
+      createMessage();
+    }
+
+    if(!isMine && data?.seen == false) {
+      setSeen();
+    }
+    super.initState();
+  }
+
+
+  void setSeen() {
+    var firestore = FirebaseFirestore.instance;
+
+    firestore.collection(AppDatabase.chats).doc(data?.chatID)
+    .collection(AppDatabase.messages).doc(data?.id).update({
+      AppDatabase.seen: true
+    }).then((result) {
+
+      setState(() {
+        data?.seen = true;
+      });
+
+    }).catchError((onError) {
+
+      print("Error setting seen: ${onError.toString()}");
+    });
+  }
 
 
   @override
@@ -126,5 +176,57 @@ class _MessageItemState extends State<MessageItem> {
       width: double.infinity,
       child: isMine? mineMessage : otherMessage
     );
+  }
+
+  bool _creatingMessage = false;
+
+  void createMessage() {
+    var firestore = FirebaseFirestore.instance;
+
+    setState(() {
+      _creatingMessage = true;
+    });
+
+    var batch = firestore.batch();
+
+    var messageDoc = firestore.collection(AppDatabase.chats).doc(data?.chatID)
+        .collection(AppDatabase.messages).doc(id);
+
+    batch.set(messageDoc, data?.toMap() as Map<String, dynamic>);
+
+
+    var chatDoc = firestore.collection(AppDatabase.chats).doc(data?.chatID);
+
+    batch.update(chatDoc, {
+      AppDatabase.lastMessage: {
+        AppDatabase.chatID: data?.chatID,
+        AppDatabase.message: data?.message,
+        AppDatabase.senderID: data?.senderID,
+        AppDatabase.seen: data?.seen,
+        AppDatabase.created: data?.created
+      }
+    });
+
+    batch.commit().then((result) {
+
+      if(!mounted) {
+        return;
+      }
+
+      setState(() {
+        _creatingMessage = false;
+      });
+    }).catchError((onError) {
+
+      if(!mounted) {
+        return;
+      }
+
+      setState(() {
+        _creatingMessage = false;
+      });
+
+      print("Error creating message: ${onError.toString()}");
+    });
   }
 }

@@ -92,7 +92,10 @@ class AppLocalizations {
       "do_you_want_to_logout" : "Do you want to logout?",
       "do_you_want_to_start_a_conversation_with" : "Do you want to start a conversation with",
       "opening_chat" : "Opening chat",
-      "creating_chat" : "Creating chat"
+      "creating_chat" : "Creating chat",
+      "something_went_wrong" : "Something went wrong",
+      "you_dont_have_chats_yet" : "You don't have chats yet",
+      "your_balances" : "Your balances"
 
 
     },
@@ -166,7 +169,10 @@ class AppLocalizations {
       "do_you_want_to_logout" : "¿Quieres cerrar sesión?",
       "do_you_want_to_start_a_conversation_with" : "¿Quieres iniciar una conversación con",
       "opening_chat" : "Abriendo conversación",
-      "creating_chat" : "Creando chat"
+      "creating_chat" : "Creando chat",
+      "something_went_wrong" : "Algo salio mal",
+      "you_dont_have_chats_yet" : "No tienes mensajes todaivia",
+      "your_balances" : "Tus balances"
 
     }
   };

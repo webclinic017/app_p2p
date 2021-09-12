@@ -35,7 +35,15 @@ class MessageData {
     message = map[AppDatabase.message];
     senderID = map[AppDatabase.senderID];
     seen = map[AppDatabase.seen];
-    created = map[AppDatabase.created];
+    created = (map[AppDatabase.created] as Timestamp).toDate();
   }
+
+  Map<String, dynamic> toMap() => {
+    AppDatabase.chatID: chatID,
+    AppDatabase.message: message,
+    AppDatabase.senderID: senderID,
+    AppDatabase.seen: seen,
+    AppDatabase.created: created
+  };
 
 }

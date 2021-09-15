@@ -20,13 +20,7 @@ class ExchangeData {
 
     code = doc.data()?[AppDatabase.code];
 
-    int sinceEpoch = 0;
-    try {
-      sinceEpoch = int.parse(doc.data()?[AppDatabase.time].toString() as String);
-      time = DateTime.fromMillisecondsSinceEpoch(sinceEpoch);
-    }catch(e) {
-      time = null;
-    }
+    time = (doc.data()?[AppDatabase.time] as Timestamp).toDate();
 
     open = double.parse(doc.data()?[AppDatabase.open].toString() as String);
     high = double.parse(doc.data()?[AppDatabase.high].toString() as String);
@@ -35,7 +29,7 @@ class ExchangeData {
     volume = double.parse(doc.data()?[AppDatabase.volume].toString() as String);
     previousClose = double.parse(doc.data()?[AppDatabase.previousClose].toString() as String);
     change = double.parse(doc.data()?[AppDatabase.change].toString() as String);
-    changeP = double.parse(doc.data()?[AppDatabase.change].toString() as String);
+    changeP = double.parse(doc.data()?[AppDatabase.changeP].toString() as String);
 
   }
 
@@ -44,13 +38,9 @@ class ExchangeData {
 
     code = map[AppDatabase.code];
 
-    int sinceEpoch = 0;
-    try {
-      sinceEpoch = int.parse(map[AppDatabase.time].toString());
-      time = DateTime.fromMillisecondsSinceEpoch(sinceEpoch);
-    }catch(e) {
-      time = null;
-    }
+
+
+    time = DateTime.now();
 
     open = double.parse(map[AppDatabase.open].toString());
     high = double.parse(map[AppDatabase.high].toString());

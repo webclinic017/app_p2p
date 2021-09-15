@@ -1,0 +1,17 @@
+import 'package:app_p2p/database/appDatabase.dart';
+import 'package:flutter/material.dart';
+
+class CurrencyData {
+
+  String? name;
+  String? code;
+
+
+  CurrencyData({this.name, this.code});
+
+  Map<String, dynamic> toMap() => {
+    AppDatabase.currencyName: name,
+    AppDatabase.code: code
+  };
+
+}

@@ -8,16 +8,19 @@ class BalanceData {
   double? amount;
   String? currencyName;
   String? currencyCode;
+  bool? isFiat;
   DateTime? created;
 
 
-  BalanceData({this.amount, this.currencyName, this.currencyCode,
+
+  BalanceData({this.amount, this.currencyName, this.currencyCode, this.isFiat,
   this.created});
 
   BalanceData.fromDoc(DocumentSnapshot<Map<String, dynamic>> doc) {
     amount = doc.data()?[AppDatabase.amount];
     currencyName = doc.data()?[AppDatabase.currencyName];
     currencyCode = doc.data()?[AppDatabase.currencyCode];
+    isFiat = doc.data()?[AppDatabase.isFiat];
     created = (doc.data()?[AppDatabase.created] as Timestamp).toDate();
   }
 
@@ -26,6 +29,7 @@ class BalanceData {
     amount = map[AppDatabase.amount];
     currencyName = map[AppDatabase.currencyName];
     currencyCode = map[AppDatabase.currencyCode];
+
 
   }
 

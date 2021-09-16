@@ -6,6 +6,7 @@ import 'package:app_p2p/database/currencyData.dart';
 import 'package:app_p2p/database/exchangeData.dart';
 import 'package:app_p2p/database/userData.dart';
 import 'package:app_p2p/localizations/appLocalizations.dart';
+import 'package:app_p2p/screens/home/wallet/displayBalance.dart';
 import 'package:app_p2p/screens/login/login.dart';
 import 'package:app_p2p/utilities/appColors.dart';
 import 'package:app_p2p/utilities/currenciesManager.dart';
@@ -51,7 +52,13 @@ class _WalletState extends State<Wallet> with SingleTickerProviderStateMixin {
       BalanceData balanceData = BalanceData.fromDoc(doc);
       balances.add(balanceData);
       setState(() {
-        _balances.add(BalanceItem(data: balanceData, isMine: true,));
+        _balances.add(BalanceItem(data: balanceData, isMine: true,
+        onPressed: (data, exchange) {
+
+          Navigator.push(context, MaterialPageRoute(builder: (context) =>
+              DisplayBalance(data: data, exchangeData: exchange,)));
+
+        },));
         _balances.add(SizedBox(height: 20,));
       });
     }
@@ -118,9 +125,15 @@ class _WalletState extends State<Wallet> with SingleTickerProviderStateMixin {
 
       BalanceData balanceData = BalanceData(amount: 0.0,
       currencyName: fiat.name, currencyCode: fiat.code,
+      isFiat: true,
       created: DateTime.now());
 
-      _fiatCurrencies.add(BalanceItem(data: balanceData, isFiat: true,));
+      _fiatCurrencies.add(BalanceItem(data: balanceData, isFiat: true,
+        onPressed: (data, exchange) {
+
+          Navigator.push(context, MaterialPageRoute(builder: (context) =>
+              DisplayBalance(data: data, exchangeData: exchange,)));
+        },));
       _fiatCurrencies.add(SizedBox(height: 20,));
     }
 
@@ -140,9 +153,15 @@ class _WalletState extends State<Wallet> with SingleTickerProviderStateMixin {
 
       BalanceData balanceData = BalanceData(amount: 0.0,
           currencyName: fiat.name, currencyCode: fiat.code,
+          isFiat: false,
           created: DateTime.now());
 
-      _cryptocurrencies.add(BalanceItem(data: balanceData, isFiat: false,));
+      _cryptocurrencies.add(BalanceItem(data: balanceData, isFiat: false,
+      onPressed: (data, exchange) {
+
+        Navigator.push(context, MaterialPageRoute(builder: (context) =>
+        DisplayBalance(data: data, exchangeData: exchange,)));
+      },));
       _cryptocurrencies.add(SizedBox(height: 20,));
     }
 
@@ -163,9 +182,15 @@ class _WalletState extends State<Wallet> with SingleTickerProviderStateMixin {
 
       BalanceData balanceData = BalanceData(amount: 0.0,
           currencyName: fiat.name, currencyCode: fiat.code,
+          isFiat: false,
           created: DateTime.now());
 
-      _assets.add(BalanceItem(data: balanceData, isFiat: false,));
+      _assets.add(BalanceItem(data: balanceData, isFiat: false,
+        onPressed: (data, exchange) {
+
+          Navigator.push(context, MaterialPageRoute(builder: (context) =>
+              DisplayBalance(data: data, exchangeData: exchange,)));
+        },));
       _assets.add(SizedBox(height: 20,));
     }
 

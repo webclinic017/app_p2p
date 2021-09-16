@@ -187,6 +187,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin{
               height: double.infinity,
               child: PageView(
                 controller: _pageController,
+                physics: NeverScrollableScrollPhysics(),
                 children: [
 
                   ChatsScreen(),

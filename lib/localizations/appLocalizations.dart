@@ -188,7 +188,16 @@ class AppLocalizations {
       "Live Cattle Futures" : "Live Cattle Futures",
       "Lean Hogs" : "Lean Hogs",
       "Aluminum" : "Aluminum",
-      "currencies_and_assets" : "Currencies & Assets"
+      "currencies_and_assets" : "Currencies & Assets",
+      "balance" : "Balance",
+      "open_balance_uppercase" : "OPEN BALANCE",
+      "in_b_dollars" : "In B-Dollars",
+      "convert_balance" : "Convert Balance",
+      "from" : "From",
+      "to" : "To",
+      "convert_uppercase" : "CONVERT",
+      "balance_picker" : "Balance Picker"
+
 
 
 
@@ -362,7 +371,14 @@ class AppLocalizations {
       "Live Cattle Futures" : "Futuros de ganado vivo",
       "Lean Hogs" : "Cerdos magros",
       "Aluminum" : "Aluminio",
-      "currencies_and_assets" : "Monedas Y Activos"
+      "currencies_and_assets" : "Monedas Y Activos",
+      "open_balance_uppercase" : "ABRIR BALANCE",
+      "in_b_dollars" : "En B-Dollars",
+      "convert_balance" : "Convertir Balance",
+      "from" : "Desde",
+      "to" : "A",
+      "convert_uppercase" : "CONVERTIR",
+      "balance_picker" : "Selector de Balances"
 
 
     }

@@ -48,6 +48,7 @@ class AppDatabase {
   static String balances = "balances";
   static String amount = "amount";
   static String currencyName = "currencyName";
+  static String isFiat = "isFiat";
   static String currencyCode = "currencyCode";
 
 

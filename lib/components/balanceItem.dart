@@ -15,7 +15,7 @@ class BalanceItem extends StatefulWidget {
   BalanceData? data;
   bool? isFiat;
   bool? isMine;
-  Function(BalanceData)? onPressed;
+  Function(BalanceData, ExchangeData)? onPressed;
   BalanceItem({this.data, this.isFiat, this.isMine, this.onPressed});
 
 
@@ -28,7 +28,7 @@ class _BalanceItemState extends State<BalanceItem> {
   BalanceData? data;
   bool? isFiat;
   bool? isMine;
-  Function(BalanceData)? onPressed;
+  Function(BalanceData, ExchangeData)? onPressed;
   _BalanceItemState({this.data, this.isFiat, this.isMine, this.onPressed}) {
     if(isFiat == null) {
       isFiat = false;
@@ -142,7 +142,11 @@ class _BalanceItemState extends State<BalanceItem> {
         color: Colors.white.withOpacity(0.0),
         child: InkWell(
           borderRadius: BorderRadius.circular(10),
-          onTap: onPressed?.call(data as BalanceData),
+          onTap: () {
+            if(onPressed != null && _currencyExchangeData != null) {
+              onPressed?.call(data as BalanceData, _currencyExchangeData as ExchangeData);
+            }
+          },
           child: Row(
             children: [
               SizedBox(width: 20,),
@@ -288,7 +292,7 @@ class _BalanceItemState extends State<BalanceItem> {
                                     height: 15,
                                     child: FittedBox(
                                       alignment: Alignment.centerLeft,
-                                      child: Text(_currencyExchangeData != null? "1 ${data?.currencyCode?.substring(0,3)} = ${(_currencyExchangeData?.close?.toStringAsFixed(2) as String) } B-Dollar": "-", style: TextStyle(
+                                      child: Text(_currencyExchangeData != null? "1 B-Dollar = ${(_currencyExchangeData?.close?.toStringAsFixed(2) as String) } ${data?.currencyCode?.substring(0,3)}": "-", style: TextStyle(
                                           color: Colors.white.withOpacity(0.7), fontSize: 12),),
                                     ),
                                   ),
@@ -314,6 +318,9 @@ class _BalanceItemState extends State<BalanceItem> {
                           ],
                         ),
                       ),
+
+
+
 
 
 

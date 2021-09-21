@@ -1,3 +1,4 @@
+import 'package:app_p2p/components/loader.dart';
 import 'package:app_p2p/database/appDatabase.dart';
 import 'package:app_p2p/database/balanceData.dart';
 import 'package:app_p2p/database/exchangeData.dart';
@@ -5,29 +6,34 @@ import 'package:app_p2p/localizations/appLocalizations.dart';
 import 'package:app_p2p/screens/home/wallet/convertBalance.dart';
 import 'package:app_p2p/screens/login/login.dart';
 import 'package:app_p2p/utilities/appColors.dart';
+import 'package:app_p2p/utilities/appUtilities.dart';
 import 'package:app_p2p/utilities/currenciesManager.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class DisplayBalance extends StatefulWidget {
 
   BalanceData? data;
   ExchangeData? exchangeData;
+  Function()? onBalanceOpened;
   
-  DisplayBalance({this.data, this.exchangeData});
+  DisplayBalance({this.data, this.exchangeData, this.onBalanceOpened});
 
   @override
   _DisplayBalanceState createState() => _DisplayBalanceState(data: data,
-  exchangeData: exchangeData);
+  exchangeData: exchangeData, onBalanceOpened: onBalanceOpened);
 }
 
 class _DisplayBalanceState extends State<DisplayBalance> {
 
   BalanceData? data;
   ExchangeData? exchangeData;
-  _DisplayBalanceState({this.data, this.exchangeData});
+  Function()? onBalanceOpened;
+  _DisplayBalanceState({this.data, this.exchangeData, this.onBalanceOpened});
   
-  
+  bool _isLoading = false;
+  String _loadMessage = "";
 
   bool _checking = false;
   bool _inBalance = false;
@@ -250,6 +256,20 @@ class _DisplayBalanceState extends State<DisplayBalance> {
                       color: Colors.white.withOpacity(0.0),
                       child: InkWell(
                         borderRadius: BorderRadius.circular(50),
+                        onTap: () {
+
+                         AppUtilities.displayDialog(context, title: loc(context, "are_u_sure"),
+                         content: "${loc(context, "do_you_want_to_open_a_new")} ${data?.currencyCode?.substring(0,3)} ${loc(context, "balance_lowercase")}" ,
+                         actions: [loc(context, "cancel_uppercase"), loc(context, "yes_uppercase")],
+                         callbacks: [() {
+
+                           Navigator.pop(context);
+                         }, () {
+                           Navigator.pop(context);
+                           openBalance();
+                         }]);
+
+                        },
                         child: Align(
                           alignment: Alignment.center,
                           child: Text(loc(context, "open_balance_uppercase"),
@@ -292,11 +312,56 @@ class _DisplayBalanceState extends State<DisplayBalance> {
                 ],
               ),
             ),
-          )
+          ),
+
+          _isLoading? Loader(loadMessage: _loadMessage,) : Container()
 
 
         ],
       ),
     );
+  }
+
+
+  bool _openingBalance = false;
+  void openBalance() {
+    var firestore = FirebaseFirestore.instance;
+
+    setState(() {
+      _openingBalance = true;
+      _isLoading = true;
+      _loadMessage = "${loc(context, "opening_balance")}..";
+    });
+
+    firestore.collection(AppDatabase.users).doc(userID)
+    .collection(AppDatabase.balances).add(data?.toMap() as Map<String, dynamic>)
+    .then((result) {
+
+      setState(() {
+        _openingBalance = false;
+        _isLoading = false;
+      });
+
+      onBalanceOpened?.call();
+
+      Navigator.pop(context);
+      Fluttertoast.showToast(
+          msg: loc(context, "balance_opened"),
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.black.withOpacity(0.4),
+          textColor: Colors.white.withOpacity(0.8),
+          fontSize: 16.0
+      );
+
+    }).catchError((onError) {
+
+      setState(() {
+        _openingBalance = false;
+        _isLoading = false;
+      });
+      print("Error opening balance: ${onError.toString()}");
+    });
   }
 }

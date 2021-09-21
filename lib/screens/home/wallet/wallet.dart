@@ -6,6 +6,8 @@ import 'package:app_p2p/database/currencyData.dart';
 import 'package:app_p2p/database/exchangeData.dart';
 import 'package:app_p2p/database/userData.dart';
 import 'package:app_p2p/localizations/appLocalizations.dart';
+import 'package:app_p2p/screens/home/wallet/addFunds.dart';
+import 'package:app_p2p/screens/home/wallet/components/walletOptions.dart';
 import 'package:app_p2p/screens/home/wallet/displayBalance.dart';
 import 'package:app_p2p/screens/login/login.dart';
 import 'package:app_p2p/utilities/appColors.dart';
@@ -29,6 +31,8 @@ class _WalletState extends State<Wallet> with SingleTickerProviderStateMixin {
   double _totalUsd = 0.0;
   String _totalUsdFormatted = "";
 
+  bool _showOptions = false;
+
 
   bool _loadingBalances = false;
 
@@ -41,6 +45,7 @@ class _WalletState extends State<Wallet> with SingleTickerProviderStateMixin {
 
     setState(() {
       _loadingBalances = true;
+      _balances.clear();
     });
     var query = await firestore.collection(AppDatabase.users).doc(userID)
     .collection(AppDatabase.balances).orderBy(AppDatabase.amount, descending: true).get();
@@ -56,12 +61,16 @@ class _WalletState extends State<Wallet> with SingleTickerProviderStateMixin {
         onPressed: (data, exchange) {
 
           Navigator.push(context, MaterialPageRoute(builder: (context) =>
-              DisplayBalance(data: data, exchangeData: exchange,)));
+              DisplayBalance(data: data, exchangeData: exchange, onBalanceOpened: () {
+                calculatingUSDBalance();
+              },)));
 
         },));
         _balances.add(SizedBox(height: 20,));
       });
     }
+
+
 
 
     setState(() {
@@ -128,12 +137,14 @@ class _WalletState extends State<Wallet> with SingleTickerProviderStateMixin {
       isFiat: true,
       created: DateTime.now());
 
-      _fiatCurrencies.add(BalanceItem(data: balanceData, isFiat: true,
+      _fiatCurrencies.add(BalanceItem(data: balanceData,
         onPressed: (data, exchange) {
 
           Navigator.push(context, MaterialPageRoute(builder: (context) =>
-              DisplayBalance(data: data, exchangeData: exchange,)));
-        },));
+              DisplayBalance(data: data, exchangeData: exchange, onBalanceOpened: () {
+                calculatingUSDBalance();
+              },)));
+        }, onlyShow: true,));
       _fiatCurrencies.add(SizedBox(height: 20,));
     }
 
@@ -156,12 +167,14 @@ class _WalletState extends State<Wallet> with SingleTickerProviderStateMixin {
           isFiat: false,
           created: DateTime.now());
 
-      _cryptocurrencies.add(BalanceItem(data: balanceData, isFiat: false,
+      _cryptocurrencies.add(BalanceItem(data: balanceData,
       onPressed: (data, exchange) {
 
         Navigator.push(context, MaterialPageRoute(builder: (context) =>
-        DisplayBalance(data: data, exchangeData: exchange,)));
-      },));
+        DisplayBalance(data: data, exchangeData: exchange, onBalanceOpened: () {
+          calculatingUSDBalance();
+        },)));
+      }, onlyShow: true,));
       _cryptocurrencies.add(SizedBox(height: 20,));
     }
 
@@ -185,12 +198,14 @@ class _WalletState extends State<Wallet> with SingleTickerProviderStateMixin {
           isFiat: false,
           created: DateTime.now());
 
-      _assets.add(BalanceItem(data: balanceData, isFiat: false,
+      _assets.add(BalanceItem(data: balanceData,
         onPressed: (data, exchange) {
 
           Navigator.push(context, MaterialPageRoute(builder: (context) =>
-              DisplayBalance(data: data, exchangeData: exchange,)));
-        },));
+              DisplayBalance(data: data, exchangeData: exchange, onBalanceOpened: () {
+                calculatingUSDBalance();
+              },)));
+        }, onlyShow: true,));
       _assets.add(SizedBox(height: 20,));
     }
 
@@ -458,6 +473,10 @@ class _WalletState extends State<Wallet> with SingleTickerProviderStateMixin {
                     borderRadius: BorderRadius.circular(60),
                     onTap: () {
 
+                      setState(() {
+                        _showOptions = true;
+                      });
+
 
 
                     },
@@ -469,7 +488,27 @@ class _WalletState extends State<Wallet> with SingleTickerProviderStateMixin {
                 ),
               ),
             ),
-          )
+          ),
+
+          _showOptions? WalletOptions(onClose: () {
+
+            setState(() {
+              _showOptions = false;
+            });
+
+          },
+          onSendMoneyPressed: () {
+
+          },
+          onReceiveMoneyPressed: () {
+
+          },
+          onAddFundsPressed: () {
+
+            Navigator.push(context, MaterialPageRoute(builder: (context) => AddFunds()));
+          },) : Container()
+
+
 
 
         ],

@@ -13,12 +13,17 @@ import 'package:geolocator/geolocator.dart';
 
 class Home extends StatefulWidget {
 
+  int? currentScreen;
+  Home({this.currentScreen = 0});
 
   @override
-  _HomeState createState() => _HomeState();
+  _HomeState createState() => _HomeState(currentScreen: currentScreen);
 }
 
 class _HomeState extends State<Home> with SingleTickerProviderStateMixin{
+
+  int? currentScreen;
+  _HomeState({this.currentScreen});
 
   PageController _pageController = PageController();
   TabController? _tabController;
@@ -29,6 +34,9 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin{
   @override
   void initState() {
     _tabController = TabController(length: 3, vsync: this);
+    setState(() {
+      _selectedScreen = currentScreen as int;
+    });
     loadCurrentLocation();
     super.initState();
   }

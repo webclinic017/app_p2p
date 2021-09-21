@@ -13,26 +13,27 @@ import 'package:flutter/material.dart';
 class BalanceItem extends StatefulWidget {
 
   BalanceData? data;
-  bool? isFiat;
+
   bool? isMine;
   Function(BalanceData, ExchangeData)? onPressed;
-  BalanceItem({this.data, this.isFiat, this.isMine, this.onPressed});
+  bool onlyShow;
+
+  BalanceItem({this.data, this.isMine, this.onPressed, this.onlyShow = false});
 
 
   @override
-  _BalanceItemState createState() => _BalanceItemState(data: data, isFiat: isFiat, isMine: isMine, onPressed: onPressed);
+  _BalanceItemState createState() => _BalanceItemState(data: data, isMine: isMine, onPressed: onPressed, onlyShow: onlyShow);
 }
 
 class _BalanceItemState extends State<BalanceItem> {
 
   BalanceData? data;
-  bool? isFiat;
+  bool? onlyShow;
+
   bool? isMine;
   Function(BalanceData, ExchangeData)? onPressed;
-  _BalanceItemState({this.data, this.isFiat, this.isMine, this.onPressed}) {
-    if(isFiat == null) {
-      isFiat = false;
-    }
+  _BalanceItemState({this.data, this.isMine, this.onPressed, this.onlyShow}) {
+
 
     if(isMine == null) {
       isMine = false;
@@ -167,7 +168,7 @@ class _BalanceItemState extends State<BalanceItem> {
                         shape: BoxShape.circle,
 
                       ),
-                      child: isFiat == false?Align(
+                      child: data?.isFiat == false?Align(
                         alignment: Alignment.center,
                         child: Text(data?.currencyName?[0].toUpperCase() as String,
                         style: TextStyle(color: Colors.white,
@@ -215,14 +216,14 @@ class _BalanceItemState extends State<BalanceItem> {
                             Expanded(
                               child: Container(
                                 width: double.infinity,
-                                child: Row(
+                                child: onlyShow == false? Row(
                                   mainAxisAlignment: MainAxisAlignment.end,
                                   children: [
                                     Text(data?.amount?.toStringAsFixed(8) as String, style: TextStyle(fontWeight: FontWeight.w600,
                                     color: Colors.white),),
 
                                   ],
-                                ),
+                                ) : Container(),
                               ),
                             ),
 
@@ -244,7 +245,7 @@ class _BalanceItemState extends State<BalanceItem> {
                                   scrollDirection: Axis.horizontal,
                                   child: Row(
                                     children: [
-                                      Text(isFiat == false? (data?.currencyName as String) : loc(context, data?.currencyName as String), style: TextStyle(fontSize: 12,
+                                      Text(data?.isFiat == false? (data?.currencyName as String) : loc(context, data?.currencyName as String), style: TextStyle(fontSize: 12,
                                           color: Colors.white.withOpacity(0.5)),),
 
                                     ],
@@ -256,14 +257,14 @@ class _BalanceItemState extends State<BalanceItem> {
                             Expanded(
                               child: Container(
                                 width: double.infinity,
-                                child: Row(
+                                child: onlyShow == false? Row(
                                   mainAxisAlignment: MainAxisAlignment.end,
                                   children: [
                                     Text(_currencyExchangeData != null? "\$ ${((_currencyExchangeData?.close as double) * (data?.amount as double)).toStringAsFixed(4)}" : "-", style: TextStyle(fontSize: 14,
                                     color: Colors.white.withOpacity(0.7), fontWeight: FontWeight.w800),),
 
                                   ],
-                                ),
+                                ) : Container(),
                               ),
                             ),
 
@@ -292,7 +293,7 @@ class _BalanceItemState extends State<BalanceItem> {
                                     height: 15,
                                     child: FittedBox(
                                       alignment: Alignment.centerLeft,
-                                      child: Text(_currencyExchangeData != null? "1 B-Dollar = ${(_currencyExchangeData?.close?.toStringAsFixed(2) as String) } ${data?.currencyCode?.substring(0,3)}": "-", style: TextStyle(
+                                      child: Text(_currencyExchangeData != null? "1 ${data?.currencyCode?.substring(0,3)} = ${ data?.isFiat == true? (1.0/(_currencyExchangeData?.close as double)).toStringAsFixed(8) : (_currencyExchangeData?.close as double)} B-Dollars": "-", style: TextStyle(
                                           color: Colors.white.withOpacity(0.7), fontSize: 12),),
                                     ),
                                   ),

@@ -196,7 +196,19 @@ class AppLocalizations {
       "from" : "From",
       "to" : "To",
       "convert_uppercase" : "CONVERT",
-      "balance_picker" : "Balance Picker"
+      "balance_picker" : "Balance Picker",
+      "do_you_want_to_open_a_new" : "Do you want to open a new",
+      "balance_lowercase" : "balance",
+      "balance_opened" : "Balance opened",
+      "opening_balance" : "Opening balance",
+      "do_you_want_to_convert" : "Do you want to convert",
+      "into_lowercase" : "into",
+      "converting" : "Converting",
+      "conversion_performed" : "Conversion performed",
+      "send_money" : 'Send money',
+      "receive_money" : "Receive money",
+      "add_funds" : "Add Funds"
+
 
 
 
@@ -378,7 +390,18 @@ class AppLocalizations {
       "from" : "Desde",
       "to" : "A",
       "convert_uppercase" : "CONVERTIR",
-      "balance_picker" : "Selector de Balances"
+      "balance_picker" : "Selector de Balances",
+      "do_you_want_to_open_a_new" : "¿Quieres abrir un nuevo",
+      "balance_lowercase" : "balance?",
+      "balance_opened" : "Balance abierto",
+      "opening_balance" : "Abriendo balance",
+      "do_you_want_to_convert" : "¿Quieres convertir",
+      "into_lowercase" : "en",
+      "converting" : "Convirtiendo",
+      "conversion_performed" : "Conversión realizada",
+      "send_money" : 'Enviar dinero',
+      "receive_money" : "Recibir dinero",
+      "add_funds" : "Agregar fondos"
 
 
     }

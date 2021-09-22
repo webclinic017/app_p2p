@@ -133,7 +133,7 @@ class _BalanceItemState extends State<BalanceItem> {
       width: double.infinity,
       height: 100,
       decoration: BoxDecoration(
-        color: AppColors.lightBackground,
+        color: Colors.white,
         border: Border.all(color: AppColors.secondary.withOpacity(isMine == true? 1.0 : 0.0), width: 2),
         borderRadius: BorderRadius.circular(10),
         boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05),
@@ -206,7 +206,7 @@ class _BalanceItemState extends State<BalanceItem> {
                                 child: Row(
                                   children: [
                                     Text(data?.currencyCode as String, style: TextStyle(fontWeight: FontWeight.w600,
-                                    color: Colors.white),),
+                                   ),),
 
                                   ],
                                 ),
@@ -219,8 +219,10 @@ class _BalanceItemState extends State<BalanceItem> {
                                 child: onlyShow == false? Row(
                                   mainAxisAlignment: MainAxisAlignment.end,
                                   children: [
-                                    Text(data?.amount?.toStringAsFixed(8) as String, style: TextStyle(fontWeight: FontWeight.w600,
-                                    color: Colors.white),),
+                                   FittedBox(
+                                     child:  Text(data?.amount?.toStringAsFixed(8) as String, style: TextStyle(fontWeight: FontWeight.w600,
+                                     ),),
+                                   )
 
                                   ],
                                 ) : Container(),
@@ -246,7 +248,7 @@ class _BalanceItemState extends State<BalanceItem> {
                                   child: Row(
                                     children: [
                                       Text(data?.isFiat == false? (data?.currencyName as String) : loc(context, data?.currencyName as String), style: TextStyle(fontSize: 12,
-                                          color: Colors.white.withOpacity(0.5)),),
+                                          color: Colors.black.withOpacity(0.5)),),
 
                                     ],
                                   ),
@@ -260,8 +262,10 @@ class _BalanceItemState extends State<BalanceItem> {
                                 child: onlyShow == false? Row(
                                   mainAxisAlignment: MainAxisAlignment.end,
                                   children: [
-                                    Text(_currencyExchangeData != null? "\$ ${((_currencyExchangeData?.close as double) * (data?.amount as double)).toStringAsFixed(4)}" : "-", style: TextStyle(fontSize: 14,
-                                    color: Colors.white.withOpacity(0.7), fontWeight: FontWeight.w800),),
+                                    FittedBox(
+                                      child: Text(_currencyExchangeData != null? "\$ ${((_currencyExchangeData?.close as double) * (data?.amount as double)).toStringAsFixed(4)}" : "-", style: TextStyle(fontSize: 14,
+                                          color: Colors.black.withOpacity(0.7), fontWeight: FontWeight.w800),),
+                                    )
 
                                   ],
                                 ) : Container(),
@@ -294,7 +298,7 @@ class _BalanceItemState extends State<BalanceItem> {
                                     child: FittedBox(
                                       alignment: Alignment.centerLeft,
                                       child: Text(_currencyExchangeData != null? "1 ${data?.currencyCode?.substring(0,3)} = ${ data?.isFiat == true? (1.0/(_currencyExchangeData?.close as double)).toStringAsFixed(8) : (_currencyExchangeData?.close as double)} B-Dollars": "-", style: TextStyle(
-                                          color: Colors.white.withOpacity(0.7), fontSize: 12),),
+                                          color: Colors.black.withOpacity(0.7), fontSize: 12),),
                                     ),
                                   ),
                                 )

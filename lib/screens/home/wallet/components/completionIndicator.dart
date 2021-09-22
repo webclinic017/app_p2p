@@ -44,13 +44,20 @@ class _CompletionIndicatorState extends State<CompletionIndicator> {
 
     controller?.subscribe((index) {
 
+      print("Controller change called: ${index}");
+
       if(_currentIndex != index) {
         _currentIndex = index;
-        onChange?.call(index);
+       // onChange?.call(index);
         generateIndicator();
+
+        print("Change current index: ${_currentIndex}");
+
       }
 
     });
+
+
 
 
 
@@ -86,7 +93,7 @@ class _CompletionIndicatorState extends State<CompletionIndicator> {
     });
     for(int i = 0; i < (pagesCount as int); i ++) {
 
-      if(_currentIndex == i) {
+      if(_currentIndex >= i) {
         _dots.add(Container(
           width: 25,
           height: 25,
@@ -94,6 +101,7 @@ class _CompletionIndicatorState extends State<CompletionIndicator> {
               color: indicatorColor,
               shape: BoxShape.circle
           ),
+
 
         ));
       }else {
@@ -111,7 +119,15 @@ class _CompletionIndicatorState extends State<CompletionIndicator> {
 
       if(i < (pagesCount as int) - 1) {
 
-        _dots.add(Expanded(child: Container(),));
+
+        _dots.add(Expanded(child: Container(
+          height: 15,
+          margin: EdgeInsets.fromLTRB(10, 0, 10, 0),
+          decoration: BoxDecoration(
+            color: _currentIndex <= i? backgroundColor : indicatorColor,
+            borderRadius: BorderRadius.circular(15)
+          ),
+        ),));
       }
     }
   }
@@ -123,9 +139,7 @@ class _CompletionIndicatorState extends State<CompletionIndicator> {
       width: double.infinity,
       height: 25,
       child: Row(
-        children: [
-
-        ],
+        children: _dots,
       ),
     );
   }

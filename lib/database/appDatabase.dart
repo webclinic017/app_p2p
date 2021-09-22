@@ -67,5 +67,11 @@ class AppDatabase {
 
 
 
+  static String mobilePayment = "mobilePayment";
+  static String internationalCard = "internationalCard";
+  static String cryptocurrency = "cryptocurrency";
+
+
+
 
 }

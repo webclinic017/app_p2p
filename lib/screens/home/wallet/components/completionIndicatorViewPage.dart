@@ -9,7 +9,8 @@ class CompletionIndicatorViewPage extends StatefulWidget {
 
 
   @override
-  _CompletionIndicatorViewPageState createState() => _CompletionIndicatorViewPageState(controller: controller);
+  _CompletionIndicatorViewPageState createState() => _CompletionIndicatorViewPageState(controller: controller,
+  children: children);
 }
 
 class _CompletionIndicatorViewPageState extends State<CompletionIndicatorViewPage> {

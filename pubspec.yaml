@@ -41,6 +41,7 @@ dependencies:
   dio: ^4.0.0
   flag: ^5.0.1
   crypto_font_icons: ^1.0.1
+  url_launcher: ^6.0.7
 
 
 dev_dependencies:
@@ -69,6 +70,9 @@ flutter:
     - assets/airtven.png
     - assets/blank_inbox_email.png
     - assets/byubi.png
+    - assets/mobile_payment.png
+    - assets/card_payment.png
+    - assets/crypto_payment.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

@@ -6,7 +6,7 @@ import 'package:app_p2p/database/currencyData.dart';
 import 'package:app_p2p/database/exchangeData.dart';
 import 'package:app_p2p/database/userData.dart';
 import 'package:app_p2p/localizations/appLocalizations.dart';
-import 'package:app_p2p/screens/home/wallet/addFunds.dart';
+import 'package:app_p2p/screens/home/wallet/addFunds/addFunds.dart';
 import 'package:app_p2p/screens/home/wallet/components/walletOptions.dart';
 import 'package:app_p2p/screens/home/wallet/displayBalance.dart';
 import 'package:app_p2p/screens/login/login.dart';

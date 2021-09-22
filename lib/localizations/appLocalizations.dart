@@ -207,10 +207,24 @@ class AppLocalizations {
       "conversion_performed" : "Conversion performed",
       "send_money" : 'Send money',
       "receive_money" : "Receive money",
-      "add_funds" : "Add Funds"
-
-
-
+      "add_funds" : "Add Funds",
+      "method" : "Method",
+      "checkout" : "Checkout",
+      "mobile_payment" : "Pago Móvil",
+      "international_card" : "Tarjeta Internacional",
+      "cryptocurrency" : "Cryptocurrency",
+      "methods_uppercase" : "METHODS",
+      "which_method_do_you_want_to_use_to_add_funds" : "Which method do you want to use to add funds?",
+      "balance_uppercase" : "BALANCE",
+      "select_the_balance_where_do_you_want_to_add_money" : "Select the balance where do you want to add money",
+      "previous" : "Previous",
+      "checkout_uppercase" : "CHECKOUT",
+      "just_a_few_steps_left_and_we_will_be_ready" : "Just a few steps left and we will be ready",
+      "payment_method" : "Payment method",
+      "continue_to_payment_uppercase" : "CONTINUE TO PAYMENT",
+      "the_amount_must_be_greater_than_zero" : "The amount must be greater than zero",
+      "amount" : "Amount",
+      "processing_request" : "Processing request"
 
 
 
@@ -401,7 +415,24 @@ class AppLocalizations {
       "conversion_performed" : "Conversión realizada",
       "send_money" : 'Enviar dinero',
       "receive_money" : "Recibir dinero",
-      "add_funds" : "Agregar fondos"
+      "add_funds" : "Agregar fondos",
+      "checkout" : "Verificar",
+      "mobile_payment" : "Pago Móvil",
+      "international_card" : "Tarjeta Internacional",
+      "cryptocurrency" : "Criptomonedas",
+      "methods_uppercase" : "MÉTODOS",
+      "which_method_do_you_want_to_use_to_add_funds" : "¿Qué metodo quieres utilizar para agregar fondos?",
+      "select_the_balance_where_do_you_want_to_add_money" : "Selecciona el balance donde quieres agregar dinero",
+      "previous" : "Anterior",
+      "checkout_uppercase" : "REVISION",
+      "just_a_few_steps_left_and_we_will_be_ready" : "Solo unos pocos pasos más y estaremos listos",
+      "payment_method" : "Payment method",
+      "continue_to_payment_uppercase" : "IR AL PAGAR",
+      "the_amount_must_be_greater_than_zero" : "El monto tiene que ser mayor a cero",
+      "amount" : "Monto",
+      "processing_request" : "Procesando solicitud"
+
+
 
 
     }

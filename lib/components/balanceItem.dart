@@ -164,14 +164,14 @@ class _BalanceItemState extends State<BalanceItem> {
                       width: 50,
                       height: 50,
                       decoration: BoxDecoration(
-                        color: currencyColor ,
+                        color: AppColors.form ,
                         shape: BoxShape.circle,
 
                       ),
                       child: data?.isFiat == false?Align(
                         alignment: Alignment.center,
-                        child: Text(data?.currencyName?[0].toUpperCase() as String,
-                        style: TextStyle(color: Colors.white,
+                        child: Text(data?.currencyName?.replaceAll('"', "")[0].toUpperCase() as String,
+                        style: TextStyle(color: Colors.black,
                         fontWeight: FontWeight.w600),),
                       ) : ClipRRect(
                         borderRadius: BorderRadius.circular(50),
@@ -205,7 +205,7 @@ class _BalanceItemState extends State<BalanceItem> {
                                 width: double.infinity,
                                 child: Row(
                                   children: [
-                                    Text(data?.currencyCode as String, style: TextStyle(fontWeight: FontWeight.w600,
+                                    Text(data?.currencyCode?.split(".")[0] as String, style: TextStyle(fontWeight: FontWeight.w600,
                                    ),),
 
                                   ],
@@ -247,7 +247,7 @@ class _BalanceItemState extends State<BalanceItem> {
                                   scrollDirection: Axis.horizontal,
                                   child: Row(
                                     children: [
-                                      Text(data?.isFiat == false? (data?.currencyName as String) : loc(context, data?.currencyName as String), style: TextStyle(fontSize: 12,
+                                      Text(data?.currencyName?.replaceAll('"', "") as String, style: TextStyle(fontSize: 12,
                                           color: Colors.black.withOpacity(0.5)),),
 
                                     ],

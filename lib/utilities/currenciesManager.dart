@@ -1,6 +1,8 @@
 
+import 'package:app_p2p/database/appDatabase.dart';
 import 'package:app_p2p/database/currencyData.dart';
 import 'package:crypto_font_icons/crypto_font_icons.dart';
+import 'package:dio/dio.dart';
 import 'package:flag/flag.dart';
 import 'package:flutter/material.dart';
 
@@ -216,6 +218,128 @@ class CurrenciesManager {
     "ICE Brent Crude", "Live Cattle Futures", "Lean Hogs",
     "Aluminum"
   ];
+
+  static Future<List<Map<String, dynamic>>> loadFiatCurrencies () async{
+
+    List<Map<String, dynamic>> _fiatMapList = [];
+
+      var request = await Dio().get("https://eodhistoricaldata.com/api/exchange-symbol-list/FOREX?api_token=${AppDatabase.apiToken}");
+
+      int counter = 0;
+      for(String fiat in (request.data as String).split("\n")) {
+        List<String> elements = fiat.split(",");
+
+        if(counter > 0) {
+          if(elements[0].length == 3) {
+            if (elements.length >= 5) {
+              _fiatMapList.add({
+                "code": elements[0],
+                "name": elements[1],
+                "country": elements[2],
+                "exchange": elements[3],
+                "currency": elements[4],
+
+              });
+            }
+          }
+
+        }
+
+        counter ++;
+
+
+
+
+
+      }
+
+
+      return _fiatMapList;
+
+
+
+
+
+  }
+
+
+  static Future<List<Map<String, dynamic>>> loadCryptoCurrencies() async{
+    List<Map<String, dynamic>> _cryptoMapList = [];
+
+    var request = await Dio().get("https://eodhistoricaldata.com/api/exchange-symbol-list/CC?api_token=${AppDatabase.apiToken}");
+
+    int counter = 0;
+    for(String crypto in (request.data as String).split("\n")) {
+      List<String> elements = crypto.split(",");
+
+      if(counter > 0) {
+
+          if (elements.length >= 5) {
+            _cryptoMapList.add({
+              "code": elements[0],
+              "name": elements[1],
+              "country": elements[2],
+              "exchange": elements[3],
+              "currency": elements[4],
+
+            });
+          }
+
+
+      }
+
+      counter ++;
+
+
+
+
+
+    }
+
+    return _cryptoMapList;
+
+
+  }
+
+
+  static Future<List<Map<String, dynamic>>> loadAssets() async{
+    List<Map<String, dynamic>> _commoditiesMapList = [];
+
+    var request = await Dio().get("https://eodhistoricaldata.com/api/exchange-symbol-list/COMM?api_token=${AppDatabase.apiToken}");
+
+    int counter = 0;
+    for(String commodity in (request.data as String).split("\n")) {
+      List<String> elements = commodity.split(",");
+
+      if(counter > 0) {
+
+        if (elements.length >= 5) {
+          _commoditiesMapList.add({
+            "code": elements[0],
+            "name": elements[1],
+            "country": elements[2],
+            "exchange": elements[3],
+            "currency": elements[4],
+
+          });
+        }
+
+
+      }
+
+      counter ++;
+
+
+
+
+
+    }
+
+    return _commoditiesMapList;
+
+
+
+  }
 
 
 

@@ -277,7 +277,7 @@ class _ConvertBalanceState extends State<ConvertBalance> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+
       appBar: AppBar(
         backgroundColor: AppColors.primary,
         title: Text(loc(context, "convert_balance"),
@@ -298,6 +298,9 @@ class _ConvertBalanceState extends State<ConvertBalance> {
           Container(
             width: double.infinity,
             height: double.infinity,
+            decoration: BoxDecoration(
+                color: Color.fromRGBO(240, 240, 240, 1.0)
+            ),
             child: SingleChildScrollView(
               child: Column(
                 children: [
@@ -307,7 +310,7 @@ class _ConvertBalanceState extends State<ConvertBalance> {
                   Container(
                     width: double.infinity,
                     margin: EdgeInsets.fromLTRB(30, 0, 30, 0),
-                    child: Text(loc(context, "balance"), style: TextStyle(color: Colors.white),),
+                    child: Text(loc(context, "balance"), style: TextStyle(color: Colors.black),),
                   ),
 
                   SizedBox(height: 5,),
@@ -319,12 +322,12 @@ class _ConvertBalanceState extends State<ConvertBalance> {
                         children: [
                           Text("${_totalUsdFormatted}", style: TextStyle(
                               fontSize: 25, fontWeight: FontWeight.w600,
-                              color: Colors.white
+                              color: Colors.black
                           ),),
                           SizedBox(width: 7,),
 
                           Text("B-Dollars", style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600,
-                              color: Colors.white.withOpacity(0.5)),)
+                              color: Colors.black.withOpacity(0.5)),)
                         ],
                       )
                   ),
@@ -335,7 +338,7 @@ class _ConvertBalanceState extends State<ConvertBalance> {
                   Container(
                     width: double.infinity,
                     margin: EdgeInsets.fromLTRB(30, 0, 30, 0),
-                    child: Text(loc(context, "from"), style: TextStyle(color: Colors.white),),
+                    child: Text(loc(context, "from"), style: TextStyle(color: Colors.black),),
                   ),
 
                   SizedBox(height: 5,),
@@ -465,7 +468,7 @@ class _ConvertBalanceState extends State<ConvertBalance> {
                                       ),
                                       child: ClipRRect(
                                           borderRadius: BorderRadius.circular(50),
-                                          child: from?.isFiat == true? CurrenciesManager.getFlag(from?.currencyCode?[0] as String) : Align(
+                                          child: from?.isFiat == true? CurrenciesManager.getFlag(from?.currencyCode as String) : Align(
                                             alignment: Alignment.center,
                                             child: Text(from?.currencyCode?[0] as String),
                                           )
@@ -502,7 +505,7 @@ class _ConvertBalanceState extends State<ConvertBalance> {
                           width: 80,
                           child: FittedBox(
                             child: Text(from != null? "${from?.amount.toString()} ${from?.currencyCode?.substring(0, 3)}" : "-",
-                              style: TextStyle(color: Colors.white),),
+                              style: TextStyle(color: Colors.black),),
                           ),
                         )
                       ],
@@ -515,7 +518,7 @@ class _ConvertBalanceState extends State<ConvertBalance> {
                   Container(
                     width: double.infinity,
                     margin: EdgeInsets.fromLTRB(30, 0, 30, 0),
-                    child: Text(loc(context, "to"), style: TextStyle(color: Colors.white),),
+                    child: Text(loc(context, "to"), style: TextStyle(color: Colors.black),),
                   ),
 
                   SizedBox(height: 5,),
@@ -668,7 +671,7 @@ class _ConvertBalanceState extends State<ConvertBalance> {
                     width: double.infinity,
                     margin: EdgeInsets.fromLTRB(30, 0, 30, 0),
                     child: fromTo != null? Text("1 ${_fromExchangeData?.code?.substring(0, 3)} = ${fromTo} ${_toExchangeData?.code?.substring(0,3)}",
-                      style: TextStyle(color: Colors.white),) : Text("-", style: TextStyle(color: Colors.white)),
+                      style: TextStyle(color: Colors.black),) : Text("-", style: TextStyle(color: Colors.black)),
                   ),
 
 

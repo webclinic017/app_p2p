@@ -78,10 +78,10 @@ class _DisplayBalanceState extends State<DisplayBalance> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Color.fromRGBO(240, 240, 240, 1.0),
       appBar: AppBar(
         backgroundColor: AppColors.primary,
-        title: Text(data?.isFiat == true? loc(context, data?.currencyName as String) : (data?.currencyName as String),
+        title: Text(data?.currencyName as String,
         style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),),
         centerTitle: true,
         leading: IconButton(onPressed: () {
@@ -178,7 +178,7 @@ class _DisplayBalanceState extends State<DisplayBalance> {
                     width: double.infinity,
                     child: Text(data?.currencyCode as String,
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600,
-                    color: Colors.white),
+                    color: Colors.black),
                     textAlign: TextAlign.center,),
                   ),
 
@@ -192,7 +192,7 @@ class _DisplayBalanceState extends State<DisplayBalance> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(exchangeData != null? "1 B-Dollar = ${(exchangeData?.close?.toStringAsFixed(2) as String) } ${data?.currencyCode?.substring(0,3)}": "-", style: TextStyle(
-                            color: Colors.white.withOpacity(0.7), fontSize: 14),),
+                            color: Colors.black.withOpacity(0.7), fontSize: 14),),
 
 
                       ],
@@ -300,7 +300,7 @@ class _DisplayBalanceState extends State<DisplayBalance> {
                       child: FittedBox(
                         child: Text("\$ ${(data?.amount as double) * (exchangeData?.close as double)}",
                           style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600,
-                              color: Colors.white.withOpacity(0.7)),),
+                              color: Colors.black.withOpacity(0.7)),),
                       ),
                     ),
                   ) : Container()

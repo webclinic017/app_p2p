@@ -14,4 +14,17 @@ class CurrencyData {
     AppDatabase.code: code
   };
 
+  Map<String, dynamic> toLocalDatabaseMap() => {
+    "name" : name,
+    "code" : code
+  };
+
+  String toDatabaseString () =>"('$name','$code')";
+
+  CurrencyData.fromMap(Map<String, dynamic> map) {
+
+    name = map["name"];
+    code = "${map["code"]}.${map["exchange"]}";
+
+  }
 }

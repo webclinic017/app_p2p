@@ -5,12 +5,14 @@ import 'package:app_p2p/components/balanceItemPlaceHolder.dart';
 import 'package:app_p2p/database/currencyData.dart';
 import 'package:app_p2p/database/exchangeData.dart';
 import 'package:app_p2p/database/userData.dart';
+import 'package:app_p2p/localDatabase/localDatabase.dart';
 import 'package:app_p2p/localizations/appLocalizations.dart';
 import 'package:app_p2p/screens/home/wallet/addFunds/addFunds.dart';
 import 'package:app_p2p/screens/home/wallet/components/walletOptions.dart';
 import 'package:app_p2p/screens/home/wallet/displayBalance.dart';
 import 'package:app_p2p/screens/login/login.dart';
 import 'package:app_p2p/utilities/appColors.dart';
+import 'package:app_p2p/utilities/currenciesColors.dart';
 import 'package:app_p2p/utilities/currenciesManager.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dio/dio.dart';
@@ -124,18 +126,69 @@ class _WalletState extends State<Wallet> with SingleTickerProviderStateMixin {
   bool _loadingFiatCurrencies = false;
   List<Widget> _fiatCurrencies = [];
 
-  void loadFiatCurrencies() {
+  void loadFiatCurrencies() async{
 
     setState(() {
       _loadingFiatCurrencies = true;
     });
+    LocalDatabase.loadCurrencies(0).then((currencies) {
 
-    for(CurrencyData fiat in CurrenciesManager.getFiatCurrencies()) {
+      if(currencies.length > 0) {
+
+        for(CurrencyData fiat in currencies) {
+
+
+
+
+          BalanceData balanceData = BalanceData(amount: 0.0,
+              currencyName: fiat.name, currencyCode: fiat.code,
+              isFiat: true,
+              created: DateTime.now());
+
+          _fiatCurrencies.add(BalanceItem(data: balanceData,
+            onPressed: (data, exchange) {
+
+              Navigator.push(context, MaterialPageRoute(builder: (context) =>
+                  DisplayBalance(data: data, exchangeData: exchange, onBalanceOpened: () {
+                    calculatingUSDBalance();
+                  },)));
+            }, onlyShow: true,));
+          _fiatCurrencies.add(SizedBox(height: 20,));
+        }
+        setState(() {
+          _loadingFiatCurrencies = false;
+        });
+
+        print("Fiat currencies loaded locally!");
+
+      }else {
+        loadFiatRemotely();
+      }
+
+    });
+
+
+
+  }
+
+  void loadFiatRemotely () async{
+    setState(() {
+      _loadingFiatCurrencies = true;
+    });
+
+
+    List<CurrencyData> _currencyList = [];
+
+    for(Map<String, dynamic> fiatMap in await CurrenciesManager.loadFiatCurrencies()) {
+
+      CurrencyData fiat = CurrencyData.fromMap(fiatMap);
+
+      _currencyList.add(fiat);
 
       BalanceData balanceData = BalanceData(amount: 0.0,
-      currencyName: fiat.name, currencyCode: fiat.code,
-      isFiat: true,
-      created: DateTime.now());
+          currencyName: fiat.name, currencyCode: fiat.code,
+          isFiat: true,
+          created: DateTime.now());
 
       _fiatCurrencies.add(BalanceItem(data: balanceData,
         onPressed: (data, exchange) {
@@ -144,57 +197,184 @@ class _WalletState extends State<Wallet> with SingleTickerProviderStateMixin {
               DisplayBalance(data: data, exchangeData: exchange, onBalanceOpened: () {
                 calculatingUSDBalance();
               },)));
+
+
         }, onlyShow: true,));
       _fiatCurrencies.add(SizedBox(height: 20,));
+
+
     }
 
     setState(() {
       _loadingFiatCurrencies = false;
     });
+
+
+
+    LocalDatabase.insertAll(_currencyList, 0);
   }
+
+
+
+
+
+
+
 
   bool _loadingCryptocurrencies = false;
   List<Widget> _cryptocurrencies = [];
-  void loadCryptoCurrencies () {
+  int _limit = 50;
+  void loadCryptoCurrencies () async{
 
     setState(() {
       _loadingCryptocurrencies = true;
     });
-    for(CurrencyData fiat in CurrenciesManager.getCryptocurrencies()) {
+
+    LocalDatabase.loadCurrencies(1).then((currencies) {
+
+      if(currencies.length > 0) {
+
+        for(CurrencyData crypto in currencies) {
+          BalanceData balanceData = BalanceData(amount: 0.0,
+              currencyName: crypto.name, currencyCode: crypto.code,
+              isFiat: false,
+              created: DateTime.now());
+
+          _cryptocurrencies.add(BalanceItem(data: balanceData,
+            onPressed: (data, exchange) {
+
+              Navigator.push(context, MaterialPageRoute(builder: (context) =>
+                  DisplayBalance(data: data, exchangeData: exchange, onBalanceOpened: () {
+                    calculatingUSDBalance();
+                  },)));
+            }, onlyShow: true,));
+          _cryptocurrencies.add(SizedBox(height: 20,));
+
+
+        }
+
+        setState(() {
+          _loadingCryptocurrencies = false;
+        });
+
+        print("Crypto loaded locally!");
+      }else {
+        loadCryptoRemotely();
+      }
+
+
+
+    });
+
+
+
+
+  }
+
+
+
+
+  void loadCryptoRemotely() async{
+
+    List<CurrencyData> _currencyList = [];
+    int counter = 0;
+    for(Map<String, dynamic> cryptoMap in await CurrenciesManager.loadCryptoCurrencies()) {
+
+      CurrencyData crypto = CurrencyData.fromMap(cryptoMap);
+
+      _currencyList.add(crypto);
 
       BalanceData balanceData = BalanceData(amount: 0.0,
-          currencyName: fiat.name, currencyCode: fiat.code,
+          currencyName: crypto.name, currencyCode: crypto.code,
           isFiat: false,
           created: DateTime.now());
 
       _cryptocurrencies.add(BalanceItem(data: balanceData,
-      onPressed: (data, exchange) {
+        onPressed: (data, exchange) {
 
-        Navigator.push(context, MaterialPageRoute(builder: (context) =>
-        DisplayBalance(data: data, exchangeData: exchange, onBalanceOpened: () {
-          calculatingUSDBalance();
-        },)));
-      }, onlyShow: true,));
+          Navigator.push(context, MaterialPageRoute(builder: (context) =>
+              DisplayBalance(data: data, exchangeData: exchange, onBalanceOpened: () {
+                calculatingUSDBalance();
+              },)));
+        }, onlyShow: true,));
       _cryptocurrencies.add(SizedBox(height: 20,));
+
+      counter ++;
+
+      if(counter == _limit) {
+        break;
+      }
     }
 
+    print("Crypto loaded remotely");
     setState(() {
       _loadingCryptocurrencies = false;
     });
+
+    LocalDatabase.insertAll(_currencyList, 1);
   }
+
+
+
+
 
 
   bool _loadingAssets = false;
   List<Widget> _assets = [];
-  void loadAssetsCurrencies() {
+  void loadAssetsCurrencies() async{
 
     setState(() {
       _loadingAssets = true;
     });
-    for(CurrencyData fiat in CurrenciesManager.getAssets()) {
+
+    LocalDatabase.loadCurrencies(2).then((currencies) {
+
+      if(currencies.length > 0) {
+
+        for(CurrencyData commodities in currencies) {
+          BalanceData balanceData = BalanceData(amount: 0.0,
+              currencyName: commodities.name, currencyCode: commodities.code,
+              isFiat: false,
+              created: DateTime.now());
+
+          _assets.add(BalanceItem(data: balanceData,
+            onPressed: (data, exchange) {
+
+              Navigator.push(context, MaterialPageRoute(builder: (context) =>
+                  DisplayBalance(data: data, exchangeData: exchange, onBalanceOpened: () {
+                    calculatingUSDBalance();
+                  },)));
+            }, onlyShow: true,));
+          _assets.add(SizedBox(height: 20,));
+        }
+
+        setState(() {
+          _loadingAssets = false;
+        });
+
+        print("Assets loaded locally!");
+
+
+      }else {
+        loadAssetsRemotely();
+      }
+
+    });
+
+  }
+
+  void loadAssetsRemotely() async{
+
+    List<CurrencyData> _currencyList = [];
+
+    for(Map<String, dynamic> commoditiesMap in await CurrenciesManager.loadAssets()) {
+
+      CurrencyData commodities = CurrencyData.fromMap(commoditiesMap);
+
+      _currencyList.add(commodities);
 
       BalanceData balanceData = BalanceData(amount: 0.0,
-          currencyName: fiat.name, currencyCode: fiat.code,
+          currencyName: commodities.name, currencyCode: commodities.code,
           isFiat: false,
           created: DateTime.now());
 
@@ -212,6 +392,9 @@ class _WalletState extends State<Wallet> with SingleTickerProviderStateMixin {
     setState(() {
       _loadingAssets = false;
     });
+
+    LocalDatabase.insertAll(_currencyList, 2);
+    print("Assets loaded remotely");
 
   }
 
@@ -249,7 +432,7 @@ class _WalletState extends State<Wallet> with SingleTickerProviderStateMixin {
             width: double.infinity,
             height: double.infinity,
             decoration: BoxDecoration(
-              color: AppColors.background
+              color: Color.fromRGBO(240, 240, 240, 1.0)
             ),
             child: SingleChildScrollView(
               child: Column(
@@ -266,7 +449,7 @@ class _WalletState extends State<Wallet> with SingleTickerProviderStateMixin {
                         width: 150,
                         height: 150,
                         decoration: BoxDecoration(
-                            color: AppColors.lightBackground,
+                            color: Colors.white,
                             shape: BoxShape.circle,
                             border: Border.all(color: AppColors.secondary, width: 2),
                             boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05),
@@ -282,8 +465,8 @@ class _WalletState extends State<Wallet> with SingleTickerProviderStateMixin {
                                 width: double.infinity,
                                 child: Text(loc(context, "b_dollars"),
                                 style: TextStyle(fontWeight: FontWeight.w600,
-                                color: AppColors.mediumGray),
-                                textAlign: TextAlign.center,),
+                                color: Colors.black.withOpacity(0.5)),
+                                textAlign: TextAlign.center, ),
                               ),
 
                               SizedBox(height: 5,),
@@ -294,13 +477,13 @@ class _WalletState extends State<Wallet> with SingleTickerProviderStateMixin {
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Text("\$", style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600,
-                                        color: Colors.white.withOpacity(0.5)),),
+                                        color: Colors.black.withOpacity(0.5)),),
 
                                     SizedBox(width: 5,),
 
                                     Text("$_totalUsdFormatted",
                                       style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600,
-                                          color: Colors.white),)
+                                          color: Colors.black),)
                                   ],
                                 ),
                               )
@@ -319,7 +502,7 @@ class _WalletState extends State<Wallet> with SingleTickerProviderStateMixin {
                     margin: EdgeInsets.fromLTRB(20, 0, 20, 0),
                     child: Text(loc(context, "your_balances"),
                       style: TextStyle(fontWeight: FontWeight.w600,
-                          color: Colors.white.withOpacity(0.5)),),
+                          color: Colors.black.withOpacity(0.7)),),
                   ),
 
                   SizedBox(height: 10,),
@@ -349,7 +532,7 @@ class _WalletState extends State<Wallet> with SingleTickerProviderStateMixin {
                     margin: EdgeInsets.fromLTRB(20, 0, 20, 0),
                     child: Text(loc(context, "currencies_and_assets"),
                       style: TextStyle(fontWeight: FontWeight.w600,
-                          color: Colors.white.withOpacity(0.5)),),
+                          color: Colors.black.withOpacity(0.5)),),
                   ),
 
                   SizedBox(height: 10,),
@@ -363,9 +546,9 @@ class _WalletState extends State<Wallet> with SingleTickerProviderStateMixin {
                       controller: _tabController,
                       indicatorColor: AppColors.secondary,
                       tabs: [
-                        Tab(child: Text(loc(context, "fiat")),),
-                        Tab(child: Text(loc(context, "crypto")),),
-                        Tab(child: Text(loc(context, "assets")),),
+                        Tab(child: Text(loc(context, "fiat"), style: TextStyle(color: Colors.black),),),
+                        Tab(child: Text(loc(context, "crypto"), style: TextStyle(color: Colors.black),),),
+                        Tab(child: Text(loc(context, "assets"), style: TextStyle(color: Colors.black),),),
                       ],
                       onTap: (index) {
                         setState(() {
@@ -425,6 +608,7 @@ class _WalletState extends State<Wallet> with SingleTickerProviderStateMixin {
 
                   _selectedIndex == 2? Container(
                       width: double.infinity,
+
                       margin: EdgeInsets.fromLTRB(20, 0, 20, 0),
                       child: _loadingBalances? Column(
                         children: [

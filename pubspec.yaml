@@ -42,6 +42,9 @@ dependencies:
   flag: ^5.0.1
   crypto_font_icons: ^1.0.1
   url_launcher: ^6.0.7
+  sqflite: ^2.0.0+4
+  path_provider: ^2.0.2
+  path: ^1.8.0
 
 
 dev_dependencies:

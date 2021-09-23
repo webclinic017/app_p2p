@@ -146,7 +146,7 @@ class _BalancePickerState extends State<BalancePicker> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Color.fromRGBO(240, 240, 240, 1.0),
       appBar: AppBar(
         backgroundColor: AppColors.primary,
         title: Text(loc(context, "balance_picker"),

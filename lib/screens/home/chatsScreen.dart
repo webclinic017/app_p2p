@@ -2,6 +2,7 @@ import 'package:app_p2p/components/chatItem.dart';
 import 'package:app_p2p/database/appDatabase.dart';
 import 'package:app_p2p/database/chatData.dart';
 import 'package:app_p2p/database/messageData.dart';
+import 'package:app_p2p/localDatabase/localDatabase.dart';
 import 'package:app_p2p/localizations/appLocalizations.dart';
 import 'package:app_p2p/screens/home/conversationScreen.dart';
 import 'package:app_p2p/screens/home/newChat.dart';
@@ -78,6 +79,7 @@ class _ChatsScreenState extends State<ChatsScreen> {
         renderState = !renderState;
       });
 
+
     }).onError((handleError) {
 
       setState(() {
@@ -91,8 +93,10 @@ class _ChatsScreenState extends State<ChatsScreen> {
   @override
   void initState() {
     loadChats();
+
     super.initState();
   }
+
 
 
   @override

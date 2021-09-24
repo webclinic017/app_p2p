@@ -5,11 +5,12 @@ class SimpleUserItem extends StatefulWidget {
 
   UserData? data;
   Function(UserData)? onPressed;
-  SimpleUserItem({this.data, this.onPressed});
+  bool useMargin;
+  SimpleUserItem({this.data, this.onPressed, this.useMargin = true});
 
   @override
   _SimpleUserItemState createState() => _SimpleUserItemState(
-    data: data, onPressed: onPressed
+    data: data, onPressed: onPressed, useMargin: useMargin
   );
 }
 
@@ -17,7 +18,8 @@ class _SimpleUserItemState extends State<SimpleUserItem> {
 
   UserData? data;
   Function(UserData)? onPressed;
-  _SimpleUserItemState({this.data, this.onPressed});
+  bool? useMargin;
+  _SimpleUserItemState({this.data, this.onPressed, this.useMargin});
 
   Image? _userImage;
 
@@ -37,7 +39,7 @@ class _SimpleUserItemState extends State<SimpleUserItem> {
     return Container(
         width: double.infinity,
         height: 60,
-        margin: EdgeInsets.fromLTRB(20, 0, 20, 0),
+        margin: useMargin == true? EdgeInsets.fromLTRB(20, 0, 20, 0) : EdgeInsets.all(0),
         decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(10),

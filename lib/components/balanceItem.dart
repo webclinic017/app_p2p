@@ -14,15 +14,20 @@ class BalanceItem extends StatefulWidget {
 
   BalanceData? data;
 
+
   bool? isMine;
   Function(BalanceData, ExchangeData)? onPressed;
+  Function(ExchangeData)? onExchangeCalculated;
   bool onlyShow;
 
-  BalanceItem({this.data, this.isMine, this.onPressed, this.onlyShow = false});
+
+  BalanceItem({this.data, this.isMine, this.onPressed, this.onExchangeCalculated, this.onlyShow = false});
 
 
   @override
-  _BalanceItemState createState() => _BalanceItemState(data: data, isMine: isMine, onPressed: onPressed, onlyShow: onlyShow);
+  _BalanceItemState createState() => _BalanceItemState(data: data, isMine: isMine, onPressed: onPressed,
+      onExchangeCalculated: onExchangeCalculated,
+      onlyShow: onlyShow);
 }
 
 class _BalanceItemState extends State<BalanceItem> {
@@ -32,7 +37,9 @@ class _BalanceItemState extends State<BalanceItem> {
 
   bool? isMine;
   Function(BalanceData, ExchangeData)? onPressed;
-  _BalanceItemState({this.data, this.isMine, this.onPressed, this.onlyShow}) {
+  Function(ExchangeData)? onExchangeCalculated;
+
+  _BalanceItemState({this.data, this.isMine, this.onPressed, this.onExchangeCalculated, this.onlyShow}) {
 
 
     if(isMine == null) {
@@ -71,6 +78,7 @@ class _BalanceItemState extends State<BalanceItem> {
             Duration(minutes: 30)) {
           setState(() {
             _currencyExchangeData = exchangeData;
+            onExchangeCalculated?.call(_currencyExchangeData as ExchangeData);
           });
           //print("DATA TAKEN FROM FIREBASE");
         } else {
@@ -110,6 +118,7 @@ class _BalanceItemState extends State<BalanceItem> {
 
       setState(() {
         _currencyExchangeData = newExchangeData;
+        onExchangeCalculated?.call(_currencyExchangeData as ExchangeData);
       });
     }on DioError catch (e) {
 

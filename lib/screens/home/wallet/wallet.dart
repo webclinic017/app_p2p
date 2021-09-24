@@ -7,6 +7,7 @@ import 'package:app_p2p/database/exchangeData.dart';
 import 'package:app_p2p/database/userData.dart';
 import 'package:app_p2p/localDatabase/localDatabase.dart';
 import 'package:app_p2p/localizations/appLocalizations.dart';
+import 'package:app_p2p/screens/home/transactions/sendMoney.dart';
 import 'package:app_p2p/screens/home/wallet/addFunds/addFunds.dart';
 import 'package:app_p2p/screens/home/wallet/components/walletOptions.dart';
 import 'package:app_p2p/screens/home/wallet/displayBalance.dart';
@@ -682,6 +683,8 @@ class _WalletState extends State<Wallet> with SingleTickerProviderStateMixin {
 
           },
           onSendMoneyPressed: () {
+
+            Navigator.push(context, MaterialPageRoute(builder: (context) => SendMoney()));
 
           },
           onReceiveMoneyPressed: () {

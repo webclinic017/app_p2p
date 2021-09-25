@@ -28,10 +28,16 @@ class _SimpleUserItemState extends State<SimpleUserItem> {
     if(data?.imageUrl != null) {
       setState(() {
         _userImage = Image.network(data?.imageUrl as String,
-        width: 50, height: 50,);
+        width: 50, height: 50, fit: BoxFit.cover,);
       });
     }
 
+  }
+
+  @override
+  void initState() {
+    loadUserImage();
+    super.initState();
   }
 
   @override

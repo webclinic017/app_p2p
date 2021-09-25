@@ -271,7 +271,12 @@ class AppLocalizations {
       "rate_uppercase" : "RATE",
       "user_rated" : "User Rated",
       "rating" : "Rating",
-      "rate_user_uppercase" : "RATE USER"
+      "rate_user_uppercase" : "RATE USER",
+      "profile" : "Profile",
+      "change_picture" : "Change Picture",
+      "uploading_picture" : "Uploading Picture",
+      "picture_uploaded" : "Picture Uploaded",
+      "close_session_uppercase" : "CLOSE SESSION"
 
 
 
@@ -526,7 +531,12 @@ class AppLocalizations {
       "rate_uppercase" : "CALIFICAR",
       "user_rated" : "Usuario calificado",
       "rating" : "Calificación",
-      "rate_user_uppercase" : "CALIFICAR USUARIO"
+      "rate_user_uppercase" : "CALIFICAR USUARIO",
+      "profile" : "Perfil",
+      "change_picture" : "Cambiar Foto",
+      "uploading_picture" : "Subiendo Imágen",
+      "picture_uploaded" : "Imágen Subida",
+      "close_session_uppercase" : "CERRAR SESIÓN"
 
 
 

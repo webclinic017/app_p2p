@@ -38,7 +38,7 @@ class _QualificationUserState extends State<QualificationUser> {
     if(data?.imageUrl != null) {
       setState(() {
         _userImage = Image.network(data?.imageUrl as String, width: 80,
-        height: 80,);
+        height: 80, fit: BoxFit.cover,);
       });
     }
   }

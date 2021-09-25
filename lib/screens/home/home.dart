@@ -1,6 +1,7 @@
 import 'package:app_p2p/database/appDatabase.dart';
 import 'package:app_p2p/localizations/appLocalizations.dart';
 import 'package:app_p2p/screens/home/chatsScreen.dart';
+import 'package:app_p2p/screens/home/profile/profile.dart';
 import 'package:app_p2p/screens/home/social/social.dart';
 import 'package:app_p2p/screens/home/wallet/wallet.dart';
 import 'package:app_p2p/screens/login/login.dart';
@@ -136,6 +137,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin{
     return WillPopScope(child: Scaffold(
       appBar: AppBar(
         backgroundColor: AppColors.primary,
+
         leading: IconButton(onPressed: () {
 
           AppUtilities.displayDialog(context, title: loc(context, "are_u_sure"),
@@ -153,9 +155,17 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin{
 
         }, icon: Icon(Icons.arrow_back_ios, color: Colors.white,)),
         actions: [
-          IconButton(onPressed: () {
+          PopupMenuButton(itemBuilder: (context) => [
+            PopupMenuItem(child: Text(loc(context, "profile"),),
+            value: "profile",)
+          ],
+          onSelected: (value) {
 
-          }, icon: Icon(Icons.more_vert, color: Colors.white,)),
+            if(value  == "profile") {
+
+              Navigator.push(context, MaterialPageRoute(builder: (context) => Profile()));
+            }
+          },)
         ],
         title: Row(
           mainAxisAlignment: MainAxisAlignment.center,

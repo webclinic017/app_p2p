@@ -126,7 +126,7 @@ class _ConvertBalanceState extends State<ConvertBalance> {
 
     if(_fromExchangeData != null && _toExchangeData != null) {
 
-      return (_fromExchangeData?.close as double) / (_toExchangeData?.close as double);
+      return (_fromExchangeData?.close as double) / (to?.isFiat == false? (_toExchangeData?.close as double) : (1.0/(_toExchangeData?.close as double)));
     }else {
       return null;
     }
@@ -135,7 +135,7 @@ class _ConvertBalanceState extends State<ConvertBalance> {
   double? get toFrom {
     if(_fromExchangeData != null && _toExchangeData != null) {
 
-      return (_toExchangeData?.close as double) / (_fromExchangeData?.close as double) ;
+      return (_toExchangeData?.close as double) / (from?.isFiat == false? (_fromExchangeData?.close as double) : (1.0/(_fromExchangeData?.close as double))) ;
     }else {
       return null;
     }

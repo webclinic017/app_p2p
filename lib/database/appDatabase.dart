@@ -30,6 +30,7 @@ class AppDatabase {
   static String ratingCount = "ratingCount";
   static String ratingSessions = "ratingSessions";
   static String lastRating = "lastRating";
+  static String token = "token";
 
 
   static String friends = "friends";
@@ -76,6 +77,11 @@ class AppDatabase {
   static String ratingsHistory = "ratingsHistory";
 
   static String ratingNumber = "ratingNumber";
+
+
+  static String notifications = "notifications";
+  static String title = "title";
+  static String content = "content";
 
 
 

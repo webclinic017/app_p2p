@@ -1,6 +1,8 @@
+import 'package:app_p2p/components/notificationIcon.dart';
 import 'package:app_p2p/database/appDatabase.dart';
 import 'package:app_p2p/localizations/appLocalizations.dart';
 import 'package:app_p2p/screens/home/chatsScreen.dart';
+import 'package:app_p2p/screens/home/notifications.dart';
 import 'package:app_p2p/screens/home/profile/profile.dart';
 import 'package:app_p2p/screens/home/social/social.dart';
 import 'package:app_p2p/screens/home/wallet/wallet.dart';
@@ -9,7 +11,10 @@ import 'package:app_p2p/utilities/appColors.dart';
 import 'package:app_p2p/utilities/appUtilities.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geolocator/geolocator.dart';
 
@@ -33,6 +38,43 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin{
   int _selectedScreen = 0;
   Position? _currentPosition;
 
+
+  Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+    // If you're going to use other Firebase services in the background, such as Firestore,
+    // make sure you call `initializeApp` before using other Firebase services.
+    await Firebase.initializeApp();
+    print('Handling a background message ${message.messageId}');
+  }
+
+  Future<void> _onMessageHandler(RemoteMessage message) async{
+
+    if(!mounted) {
+      return;
+    }
+
+    List<String>? titleStringList = message.notification?.title?.split("|");
+    String title ="";
+
+    if((titleStringList?.length as int) > 1) {
+      title = "${titleStringList?[0]} ${(titleStringList?.length as int) > 1? loc(context, titleStringList?[1] as String) : ""}";
+    }else {
+      title = message.notification?.title as String;
+    }
+
+
+    String content = message.notification?.body as String;
+
+    flutterLocalNotificationsPlugin?.show(0, title, content, NotificationDetails(android: AndroidNotificationDetails(channel?.id as String, channel?.name as String, channel?.description as String)));
+  }
+
+
+
+
+  AndroidNotificationChannel? channel;
+
+
+  FlutterLocalNotificationsPlugin? flutterLocalNotificationsPlugin;
+
   @override
   void initState() {
     _tabController = TabController(length: 3, vsync: this);
@@ -40,7 +82,93 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin{
       _selectedScreen = currentScreen as int;
     });
     loadCurrentLocation();
+    initializeNotifications();
+    loadUnseenNotifications();
     super.initState();
+  }
+
+
+  int _unseenCount = 0;
+  void loadUnseenNotifications () {
+    var firestore = FirebaseFirestore.instance;
+
+    firestore.collection(AppDatabase.users).doc(userID)
+    .collection(AppDatabase.notifications)
+        .where(AppDatabase.seen, isEqualTo: false).orderBy(AppDatabase.created, descending: true)
+        .limit(100).get().then((query) {
+
+          setState(() {
+            _unseenCount = query.docs.length;
+          });
+
+
+    }).catchError((onError) {
+
+      print("Error loading unseen notifications: ${onError.toString()}");
+
+    });
+  }
+
+  @override
+  void dispose() {
+
+    super.dispose();
+  }
+
+  void initializeNotifications() async{
+    var firestore = FirebaseFirestore.instance;
+
+    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+
+   // FirebaseMessaging.onMessage.listen(_onMessageHandler);
+
+    channel = const AndroidNotificationChannel(
+      'high_importance_channel', // id
+      'High Importance Notifications', // title
+      'This channel is used for important notifications.', // description
+      importance: Importance.high,
+    );
+
+    flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+
+    /// Create an Android Notification Channel.
+    ///
+    /// We use this channel in the `AndroidManifest.xml` file to override the
+    /// default FCM channel to enable heads up notifications.
+    await flutterLocalNotificationsPlugin
+        ?.resolvePlatformSpecificImplementation<
+        AndroidFlutterLocalNotificationsPlugin>()
+        ?.createNotificationChannel(channel as AndroidNotificationChannel);
+
+
+    FirebaseMessaging messaging = FirebaseMessaging.instance;
+
+    messaging.getToken().then((result) {
+
+      firestore.collection(AppDatabase.users).doc(userID)
+          .update({
+        AppDatabase.token: result
+      }).then((result) {
+
+        print("Token updated!");
+
+
+      }).catchError((onError) {
+
+        print("Error updating token: ${onError.toString()}");
+      });
+
+    }).catchError((onError) {
+
+      print("Error getting token: ${onError.toString()}");
+    });
+    await messaging
+        .setForegroundNotificationPresentationOptions(
+      alert: true,
+      badge: true,
+      sound: true,
+    );
+
   }
 
   void loadCurrentLocation() async{
@@ -155,6 +283,15 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin{
 
         }, icon: Icon(Icons.arrow_back_ios, color: Colors.white,)),
         actions: [
+          NotificationIcon(unseenCount: _unseenCount, onPressed: () {
+
+            Navigator.push(context, MaterialPageRoute(builder: (context) => Notifications(
+              onBack: () {
+                loadUnseenNotifications();
+              },
+            )));
+
+          },),
           PopupMenuButton(itemBuilder: (context) => [
             PopupMenuItem(child: Text(loc(context, "profile"),),
             value: "profile",)
@@ -174,7 +311,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin{
 
 
             Text(currentUserData != null? "${currentUserData?.firstName} ${currentUserData?.lastName}" : "", style: TextStyle(color: Colors.white,
-                fontWeight: FontWeight.w600, fontSize: 20),),
+                fontWeight: FontWeight.w600, fontSize: 16),),
           ],
         ),
         centerTitle: true,

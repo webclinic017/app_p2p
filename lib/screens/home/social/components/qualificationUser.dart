@@ -129,6 +129,34 @@ class _QualificationUserState extends State<QualificationUser> {
 
           ),
 
+          SizedBox(height: 10,),
+
+          Container(
+            width: double.infinity,
+            height: 25,
+            margin: EdgeInsets.fromLTRB(30, 0, 30, 0),
+            child: Row(
+              children: [
+                Material(
+                  color: Colors.white.withOpacity(0.0),
+                  child: InkWell(
+                    onTap: () {
+
+                      seeComments();
+
+                    },
+                    child: Align(
+                      alignment: Alignment.center,
+                      child: Text(loc(context, "see_comments"),
+                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600,
+                      color: AppColors.secondary),),
+                    ),
+                  ),
+                )
+              ],
+            )
+          ),
+
           SizedBox(height: 50,),
 
 
@@ -197,6 +225,10 @@ class _QualificationUserState extends State<QualificationUser> {
         ],
       ),
     );
+  }
+
+  void seeComments () {
+
   }
 
 

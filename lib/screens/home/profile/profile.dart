@@ -122,7 +122,6 @@ class _ProfileState extends State<Profile> {
                   child: Text(loc(context, "first_name"), style: TextStyle(fontSize: 12),),
 
                 ),
-                SizedBox(height: 5,),
 
                 Container(
                   width: double.infinity,
@@ -139,8 +138,6 @@ class _ProfileState extends State<Profile> {
                   child: Text(loc(context, "last_name"), style: TextStyle(fontSize: 12),),
 
                 ),
-                SizedBox(height: 5,),
-
 
                 Container(
                   width: double.infinity,
@@ -158,7 +155,7 @@ class _ProfileState extends State<Profile> {
                   child: Text(loc(context, "phone_number"), style: TextStyle(fontSize: 12),),
 
                 ),
-                SizedBox(height: 5,),
+
 
 
                 Container(
@@ -168,6 +165,29 @@ class _ProfileState extends State<Profile> {
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600,
                       color: AppColors.mediumGray
                     ),),
+                ),
+
+                SizedBox(height: 10,),
+
+                Container(
+                  width: double.infinity,
+                  margin: EdgeInsets.fromLTRB(30, 0, 30, 0),
+                  child: Text(loc(context, "rating"), style: TextStyle(fontSize: 12),),
+                ),
+
+                Container(
+                    width: double.infinity,
+                    margin: EdgeInsets.fromLTRB(30, 0, 30, 0),
+                    child: Row(
+                      children: [
+                        Icon(Icons.star, color: Colors.yellow,),
+                        SizedBox(width: 5,),
+                        Text(currentUserData?.rating?.toStringAsFixed(1) as String,
+                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600,
+                              color: Colors.yellow),)
+                      ],
+                    )
+
                 ),
 
                 SizedBox(height: 50,),

@@ -276,11 +276,14 @@ class AppLocalizations {
       "change_picture" : "Change Picture",
       "uploading_picture" : "Uploading Picture",
       "picture_uploaded" : "Picture Uploaded",
-      "close_session_uppercase" : "CLOSE SESSION"
-
-
-
-
+      "close_session_uppercase" : "CLOSE SESSION",
+      "see_comments" : "See comments",
+      "the_transaction_commission_is" : "The transaction commission is",
+      "sent_you_money" : "Sent you money",
+      "send_you" : "Sent you",
+      "sent_you_a_message" : "Sent you a message",
+      "new_message" : "New message",
+      "notifications" : "Notifications"
 
 
 
@@ -536,7 +539,15 @@ class AppLocalizations {
       "change_picture" : "Cambiar Foto",
       "uploading_picture" : "Subiendo Imágen",
       "picture_uploaded" : "Imágen Subida",
-      "close_session_uppercase" : "CERRAR SESIÓN"
+      "close_session_uppercase" : "CERRAR SESIÓN",
+      "see_comments" : "Ver comentarios",
+      "the_transaction_commission_is" : "La comisión de la transacción es",
+      "sent_you_money" : "Te envió dinero",
+      "send_you" : "Te envió",
+      "sent_you_a_message" : "Te envió un mensaje",
+      "new_message" : "Nuevo mensaje",
+      "notifications" : "Notificaciones"
+
 
 
 

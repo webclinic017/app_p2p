@@ -258,6 +258,9 @@ class _ConversationScreenState extends State<ConversationScreen> {
 
 
 
+
+
+
               Container(
                 width: double.infinity,
                 height: 60,
@@ -359,6 +362,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
     );
   }
 
+  List<MessageItem> _messagesItems = [];
 
   void sendMessage () {
     var firestore = FirebaseFirestore.instance;
@@ -368,11 +372,19 @@ class _ConversationScreenState extends State<ConversationScreen> {
 
     setState(() {
 
-      _messages.add(SizedBox(height: 10,));
 
-      _messages.add(MessageItem(data: MessageData(chatID: data?.id,
-      message: _message,
-      senderID: userID, seen: false, created: DateTime.now()), id: id,));
+
+      _messages.add(SizedBox(height: 10,));
+      MessageItem item = MessageItem(data: MessageData(chatID: data?.id,
+          message: _message,
+          senderID: userID, seen: false, created: DateTime.now()), id: id,);
+
+      _messages.add(item);
+      _messagesItems.add(item);
+
+      if(_messagesItems.length > 1) {
+        _messagesItems[_messagesItems.length-2].id = null;
+      }
 
 
       _messagesID.add(id);

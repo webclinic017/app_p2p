@@ -39,6 +39,7 @@ class _SendMoneyState extends State<SendMoney> {
   bool _showMethodChooser = false;
 
   double _amount = 0.0;
+  double _finalAmount = 0.0;
 
   bool _isLoading = false;
   String _loadMessage = "";
@@ -53,6 +54,7 @@ class _SendMoneyState extends State<SendMoney> {
 
   TextEditingController _amountController = TextEditingController();
 
+  double _commission = 0.0;
 
 
   void calculatingUSDBalance() async{
@@ -307,6 +309,10 @@ class _SendMoneyState extends State<SendMoney> {
                             _amount = 0.0;
                           }
 
+                          _commission = _amount * 0.036;
+
+
+                          _finalAmount = _amount - _commission;
 
 
                           setState(() {
@@ -329,6 +335,26 @@ class _SendMoneyState extends State<SendMoney> {
 
                   SizedBox(height: 20,),
 
+                  Container(
+                    width: double.infinity,
+                    margin: EdgeInsets.fromLTRB(30, 0, 30, 0),
+                    child: Row(
+                      children: [
+                        Text("${loc(context, "the_transaction_commission_is")} ",
+                        style: TextStyle(color: AppColors.mediumGray),),
+                        Text("${_commission.toStringAsFixed(3)}", style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600,
+                        color: AppColors.secondary),),
+
+                        Text(" B-Dollars",  style: TextStyle(color: AppColors.mediumGray),)
+
+
+                      ],
+                    ),
+                  ),
+
+                  SizedBox(height: 5,),
+
+
                   _receiverUser != null && _targetWallet != null && _receiverExchange != null? Container(
                       width: double.infinity,
                       margin: EdgeInsets.fromLTRB(30, 0, 30, 0),
@@ -336,10 +362,12 @@ class _SendMoneyState extends State<SendMoney> {
                         scrollDirection: Axis.horizontal,
                         child: Row(
                           children: [
-                            Text("${_receiverUser?.firstName} ${_receiverUser?.lastName} ${loc(context, "will_receive")} "),
+                            Text("${_receiverUser?.firstName} ${_receiverUser?.lastName} ${loc(context, "will_receive")} ",
+                            style: TextStyle(color: AppColors.mediumGray),),
                             Text("${_amount / (_targetWallet?.isFiat == false?(_receiverExchange?.close as double) : (1.0/(_receiverExchange?.close as double)))}",
                               style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: AppColors.secondary),),
-                            Text(" ${_targetWallet?.currencyCode?.substring(0, 3)}")
+                            Text(" ${_targetWallet?.currencyCode?.substring(0, 3)}",
+                              style: TextStyle(color: AppColors.mediumGray),)
                           ],
                         ),
                       )
@@ -570,7 +598,7 @@ class _SendMoneyState extends State<SendMoney> {
 
     firestore.runTransaction((transaction) async{
 
-      double amountToDecrease =  _amount / (_fundsSource?.isFiat == false?(_fundsSourceExchange?.close as double) : (1.0/(_fundsSourceExchange?.close as double)));
+      double amountToDecrease =  _finalAmount / (_fundsSource?.isFiat == false?(_fundsSourceExchange?.close as double) : (1.0/(_fundsSourceExchange?.close as double)));
 
       var mainBalanceRef = firestore.collection(AppDatabase.users).doc(userID)
       .collection(AppDatabase.balances).doc(_fundsSource?.id);
@@ -589,7 +617,7 @@ class _SendMoneyState extends State<SendMoney> {
       var receiverBalanceDoc = await transaction.get(receiverBalanceRef);
 
 
-      double amountToAdd = _amount / (_targetWallet?.isFiat == false?(_receiverExchange?.close as double) : (1.0/(_receiverExchange?.close as double)));
+      double amountToAdd = _finalAmount / (_targetWallet?.isFiat == false?(_receiverExchange?.close as double) : (1.0/(_receiverExchange?.close as double)));
 
       double receiverBalance = double.parse(receiverBalanceDoc.data()?[AppDatabase.amount].toString() as String);
 

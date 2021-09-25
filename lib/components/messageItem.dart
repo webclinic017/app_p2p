@@ -1,9 +1,12 @@
 import 'package:app_p2p/database/appDatabase.dart';
+import 'package:app_p2p/database/chatData.dart';
 import 'package:app_p2p/database/messageData.dart';
+import 'package:app_p2p/localizations/appLocalizations.dart';
 import 'package:app_p2p/screens/login/login.dart';
 import 'package:app_p2p/utilities/appColors.dart';
 import 'package:app_p2p/utilities/appUtilities.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -49,15 +52,15 @@ class _MessageItemState extends State<MessageItem> {
         ),
       ) : (data?.seen == true? Row(
         children: [
-          Icon(Icons.check, color: AppColors.primary,),
-          SizedBox(width: 2,),
-          Icon(Icons.check, color: AppColors.primary,)
+          Icon(Icons.check, color: Colors.blue, size: 15,),
+
+          Icon(Icons.check, color: Colors.blue, size: 15,)
         ],
       ) : Row(
         children: [
-          Icon(Icons.check, color: AppColors.mediumGray,),
-          SizedBox(width: 2,),
-          Icon(Icons.check, color: AppColors.mediumGray,)
+          Icon(Icons.check, color: AppColors.mediumGray, size: 15,),
+
+          Icon(Icons.check, color: AppColors.mediumGray, size: 15,)
         ],
       )),
 
@@ -207,11 +210,63 @@ class _MessageItemState extends State<MessageItem> {
       }
     });
 
-    batch.commit().then((result) {
+
+
+
+
+
+
+    batch.commit().then((result) async{
+
+
 
       if(!mounted) {
         return;
       }
+
+
+
+      var chatDoc2 = await firestore.collection(AppDatabase.chats).doc(data?.chatID).get();
+
+      ChatData chatData = ChatData.fromDoc(chatDoc2);
+
+      String receiver = "";
+      for(String ids in chatData.involved as List<String>) {
+
+        if(ids != userID){
+          receiver = ids;
+          break;
+        }
+
+      }
+
+      String title = "${currentUserData?.firstName} ${currentUserData?.lastName} ${loc(context, "sent_you_a_message")}";
+      String content = data?.message as String;
+
+      firestore.collection(AppDatabase.users)
+          .doc(receiver).collection(AppDatabase.notifications).doc().set({
+        AppDatabase.title: title,
+        AppDatabase.content: content,
+        AppDatabase.seen: false,
+        AppDatabase.created: DateTime.now()
+      });
+
+
+      try {
+        var response = await Dio().post("https://cuidabu.herokuapp.com/sendNotification",data: {
+          "receiver" : receiver,
+          "title" : title,
+          "content" : content
+        });
+        print("Notification sent!");
+
+
+      }catch(e) {
+
+        print("Error sending message: ${e.toString()}");
+
+      }
+
 
       setState(() {
         _creatingMessage = false;

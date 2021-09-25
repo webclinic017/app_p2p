@@ -255,7 +255,24 @@ class AppLocalizations {
       "go_to_menu_uppercase" : "GO TO MENU",
       "error" : "Error",
       "insufficient_funds" : "Insufficient funds",
-      "ok_uppercase" : "OK"
+      "ok_uppercase" : "OK",
+      "select_balance" : "Select Balance",
+      "select_the_balance_where_you_want_to_receive_the_funds" : "Select the balance where you want to receive the funds",
+      "choose_balance" : "Choose balance",
+      "generated_qr" : "Generated QR",
+      "generate_code_uppercase" : "GENERATE CODE",
+      "show_this_qr_to_any_user_you_want_to_send_you_funds" : "Show this QR to any user you want to send you funds",
+      "see_more" : "See more",
+      "more_fiats" : "More Fiats",
+      "more_crypto" : "More Crypto",
+      "more_assets" : "More Assets",
+      "do_you_want_to_rate_this_user_with" : "Do you want to rate this user with",
+      "stars_question" : "stars?",
+      "rate_uppercase" : "RATE",
+      "user_rated" : "User Rated",
+      "rating" : "Rating",
+      "rate_user_uppercase" : "RATE USER"
+
 
 
 
@@ -493,8 +510,23 @@ class AppLocalizations {
       "go_to_menu_uppercase" : "IR AL MENU",
       "error" : "Error",
       "insufficient_funds" : "Fondos insuficientes",
-      "ok_uppercase" : "ENTENDIDO"
-
+      "ok_uppercase" : "ENTENDIDO",
+      "select_balance" : "Selecciona el balance",
+      "select_the_balance_where_you_want_to_receive_the_funds" : "Selecciona el balance donde quiere recibir los fondod",
+      "choose_balance" : "Selecciona Balance",
+      "generated_qr" : "Generated QR",
+      "generate_code_uppercase" : "GENERAR CÓDIGO",
+      "show_this_qr_to_any_user_you_want_to_send_you_funds" : "Muestrale este QR a cualquier usuario que quieras que te envie fonds",
+      "see_more" : "Ver más",
+      "more_fiats" : "Más Fiats",
+      "more_crypto" : "Más Crypto",
+      "more_assets" : "Más Assets",
+      "do_you_want_to_rate_this_user_with" : "¿Quieres calificar a este usuario con",
+      "stars_question" : "estrellas?",
+      "rate_uppercase" : "CALIFICAR",
+      "user_rated" : "Usuario calificado",
+      "rating" : "Calificación",
+      "rate_user_uppercase" : "CALIFICAR USUARIO"
 
 
 

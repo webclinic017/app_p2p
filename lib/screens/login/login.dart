@@ -82,8 +82,6 @@ class _LoginState extends State<Login> {
           children: [
 
 
-            Transform.translate(offset: Offset(MediaQuery.of(context).size.width/2 + 40, -50),
-            child: Image.asset("assets/coin.png", width: 200, height: 200,),),
 
             Container(
               width: double.infinity,

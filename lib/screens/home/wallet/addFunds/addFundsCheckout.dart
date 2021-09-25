@@ -234,7 +234,7 @@ class _AddFundsCheckoutState extends State<AddFundsCheckout> {
                         if(caller?.paymentMethod == AppDatabase.internationalCard) {
 
                           Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => Home()), (route) => false);
-                          launch("https://byubi-69a43.web.app/checkout?userID=${userID}&amount=${_amount}&rate=${caller?.balanceData?.isFiat == true? (1.0/(caller?.exchangeData?.close as double)) : (caller?.exchangeData?.close as double)}&balanceID=${caller?.balanceData?.id}");
+                          launch("https://byubi-69a43.web.app/checkout?userID=${userID}&name=${"${currentUserData?.firstName} ${currentUserData?.lastName}"}&amount=${_amount}&rate=${caller?.balanceData?.isFiat == true? (1.0/(caller?.exchangeData?.close as double)) : (caller?.exchangeData?.close as double)}&balanceID=${caller?.balanceData?.id}");
 
                         }else if(caller?.paymentMethod == AppDatabase.cryptocurrency) {
 

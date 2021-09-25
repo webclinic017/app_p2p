@@ -1,6 +1,7 @@
 import 'package:app_p2p/database/appDatabase.dart';
 import 'package:app_p2p/localizations/appLocalizations.dart';
 import 'package:app_p2p/screens/home/chatsScreen.dart';
+import 'package:app_p2p/screens/home/social/social.dart';
 import 'package:app_p2p/screens/home/wallet/wallet.dart';
 import 'package:app_p2p/screens/login/login.dart';
 import 'package:app_p2p/utilities/appColors.dart';
@@ -200,7 +201,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin{
 
                   ChatsScreen(),
                   Wallet(),
-                  Container()
+                  Social()
 
                 ],
               )

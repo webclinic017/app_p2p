@@ -7,8 +7,10 @@ import 'package:app_p2p/database/exchangeData.dart';
 import 'package:app_p2p/database/userData.dart';
 import 'package:app_p2p/localDatabase/localDatabase.dart';
 import 'package:app_p2p/localizations/appLocalizations.dart';
+import 'package:app_p2p/screens/home/transactions/receiveMoney.dart';
 import 'package:app_p2p/screens/home/transactions/sendMoney.dart';
 import 'package:app_p2p/screens/home/wallet/addFunds/addFunds.dart';
+import 'package:app_p2p/screens/home/wallet/balances.dart';
 import 'package:app_p2p/screens/home/wallet/components/walletOptions.dart';
 import 'package:app_p2p/screens/home/wallet/displayBalance.dart';
 import 'package:app_p2p/screens/login/login.dart';
@@ -132,57 +134,12 @@ class _WalletState extends State<Wallet> with SingleTickerProviderStateMixin {
     setState(() {
       _loadingFiatCurrencies = true;
     });
-    LocalDatabase.loadCurrencies(0).then((currencies) {
-
-      if(currencies.length > 0) {
-
-        for(CurrencyData fiat in currencies) {
-
-
-
-
-          BalanceData balanceData = BalanceData(amount: 0.0,
-              currencyName: fiat.name, currencyCode: fiat.code,
-              isFiat: true,
-              created: DateTime.now());
-
-          _fiatCurrencies.add(BalanceItem(data: balanceData,
-            onPressed: (data, exchange) {
-
-              Navigator.push(context, MaterialPageRoute(builder: (context) =>
-                  DisplayBalance(data: data, exchangeData: exchange, onBalanceOpened: () {
-                    calculatingUSDBalance();
-                  },)));
-            }, onlyShow: true,));
-          _fiatCurrencies.add(SizedBox(height: 20,));
-        }
-        setState(() {
-          _loadingFiatCurrencies = false;
-        });
-
-        print("Fiat currencies loaded locally!");
-
-      }else {
-        loadFiatRemotely();
-      }
-
-    });
-
-
-
-  }
-
-  void loadFiatRemotely () async{
-    setState(() {
-      _loadingFiatCurrencies = true;
-    });
 
 
     List<CurrencyData> _currencyList = [];
 
-    for(Map<String, dynamic> fiatMap in await CurrenciesManager.loadFiatCurrencies()) {
+    for(CurrencyData fiat in CurrenciesManager.loadMainFiats()) {
 
-      CurrencyData fiat = CurrencyData.fromMap(fiatMap);
 
       _currencyList.add(fiat);
 
@@ -212,8 +169,9 @@ class _WalletState extends State<Wallet> with SingleTickerProviderStateMixin {
 
 
 
-    LocalDatabase.insertAll(_currencyList, 0);
+
   }
+
 
 
 
@@ -231,57 +189,10 @@ class _WalletState extends State<Wallet> with SingleTickerProviderStateMixin {
       _loadingCryptocurrencies = true;
     });
 
-    LocalDatabase.loadCurrencies(1).then((currencies) {
-
-      if(currencies.length > 0) {
-
-        for(CurrencyData crypto in currencies) {
-          BalanceData balanceData = BalanceData(amount: 0.0,
-              currencyName: crypto.name, currencyCode: crypto.code,
-              isFiat: false,
-              created: DateTime.now());
-
-          _cryptocurrencies.add(BalanceItem(data: balanceData,
-            onPressed: (data, exchange) {
-
-              Navigator.push(context, MaterialPageRoute(builder: (context) =>
-                  DisplayBalance(data: data, exchangeData: exchange, onBalanceOpened: () {
-                    calculatingUSDBalance();
-                  },)));
-            }, onlyShow: true,));
-          _cryptocurrencies.add(SizedBox(height: 20,));
-
-
-        }
-
-        setState(() {
-          _loadingCryptocurrencies = false;
-        });
-
-        print("Crypto loaded locally!");
-      }else {
-        loadCryptoRemotely();
-      }
-
-
-
-    });
-
-
-
-
-  }
-
-
-
-
-  void loadCryptoRemotely() async{
-
     List<CurrencyData> _currencyList = [];
     int counter = 0;
-    for(Map<String, dynamic> cryptoMap in await CurrenciesManager.loadCryptoCurrencies()) {
+    for(CurrencyData crypto in CurrenciesManager.loadMainCrypto()) {
 
-      CurrencyData crypto = CurrencyData.fromMap(cryptoMap);
 
       _currencyList.add(crypto);
 
@@ -307,13 +218,20 @@ class _WalletState extends State<Wallet> with SingleTickerProviderStateMixin {
       }
     }
 
-    print("Crypto loaded remotely");
+
     setState(() {
       _loadingCryptocurrencies = false;
     });
 
-    LocalDatabase.insertAll(_currencyList, 1);
+
+
+
   }
+
+
+
+
+
 
 
 
@@ -328,49 +246,11 @@ class _WalletState extends State<Wallet> with SingleTickerProviderStateMixin {
       _loadingAssets = true;
     });
 
-    LocalDatabase.loadCurrencies(2).then((currencies) {
-
-      if(currencies.length > 0) {
-
-        for(CurrencyData commodities in currencies) {
-          BalanceData balanceData = BalanceData(amount: 0.0,
-              currencyName: commodities.name, currencyCode: commodities.code,
-              isFiat: false,
-              created: DateTime.now());
-
-          _assets.add(BalanceItem(data: balanceData,
-            onPressed: (data, exchange) {
-
-              Navigator.push(context, MaterialPageRoute(builder: (context) =>
-                  DisplayBalance(data: data, exchangeData: exchange, onBalanceOpened: () {
-                    calculatingUSDBalance();
-                  },)));
-            }, onlyShow: true,));
-          _assets.add(SizedBox(height: 20,));
-        }
-
-        setState(() {
-          _loadingAssets = false;
-        });
-
-        print("Assets loaded locally!");
-
-
-      }else {
-        loadAssetsRemotely();
-      }
-
-    });
-
-  }
-
-  void loadAssetsRemotely() async{
-
     List<CurrencyData> _currencyList = [];
 
-    for(Map<String, dynamic> commoditiesMap in await CurrenciesManager.loadAssets()) {
+    for(CurrencyData commodities in CurrenciesManager.loadMainAssets()) {
 
-      CurrencyData commodities = CurrencyData.fromMap(commoditiesMap);
+
 
       _currencyList.add(commodities);
 
@@ -394,10 +274,9 @@ class _WalletState extends State<Wallet> with SingleTickerProviderStateMixin {
       _loadingAssets = false;
     });
 
-    LocalDatabase.insertAll(_currencyList, 2);
-    print("Assets loaded remotely");
-
   }
+
+
 
 
 
@@ -581,6 +460,31 @@ class _WalletState extends State<Wallet> with SingleTickerProviderStateMixin {
                     )
                   ) : Container(),
 
+                  _selectedIndex == 0? Container(
+                    width: double.infinity,
+                    height: 30,
+                    margin: EdgeInsets.fromLTRB(20, 0, 20, 0),
+                    child: Row(
+                      children: [
+                        Material(
+                          color: Colors.white.withOpacity(0.0),
+                          child: InkWell(
+                            borderRadius: BorderRadius.circular(10),
+                            onTap: () {
+
+                              Navigator.push(context, MaterialPageRoute(builder: (context) => Balances(
+                                type: 0,
+                              )));
+                            },
+                            child: Text(loc(context, "see_more"),
+                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600,
+                                  color: AppColors.secondary),),
+                          ),
+                        )
+                      ],
+                    ),
+                  ) : Container(),
+
 
 
 
@@ -604,6 +508,31 @@ class _WalletState extends State<Wallet> with SingleTickerProviderStateMixin {
                       )
                   ) : Container(),
 
+                  _selectedIndex == 1? Container(
+                    width: double.infinity,
+                    height: 30,
+                    margin: EdgeInsets.fromLTRB(20, 0, 20, 0),
+                    child: Row(
+                      children: [
+                        Material(
+                          color: Colors.white.withOpacity(0.0),
+                          child: InkWell(
+                            borderRadius: BorderRadius.circular(10),
+                            onTap: () {
+
+                              Navigator.push(context, MaterialPageRoute(builder: (context) => Balances(
+                                type: 1,
+                              )));
+                            },
+                            child: Text(loc(context, "see_more"),
+                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600,
+                            color: AppColors.secondary),),
+                          ),
+                        )
+                      ],
+                    ),
+                  ) : Container(),
+
 
                   _selectedIndex == 2? SizedBox(height: 10,) : Container(),
 
@@ -624,6 +553,31 @@ class _WalletState extends State<Wallet> with SingleTickerProviderStateMixin {
                       ) : Column(
                         children: _assets,
                       )
+                  ) : Container(),
+
+                  _selectedIndex == 2? Container(
+                    width: double.infinity,
+                    height: 30,
+                    margin: EdgeInsets.fromLTRB(20, 0, 20, 0),
+                    child: Row(
+                      children: [
+                        Material(
+                          color: Colors.white.withOpacity(0.0),
+                          child: InkWell(
+                            borderRadius: BorderRadius.circular(10),
+                            onTap: () {
+
+                              Navigator.push(context, MaterialPageRoute(builder: (context) => Balances(
+                                type: 2,
+                              )));
+                            },
+                            child: Text(loc(context, "see_more"),
+                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600,
+                                  color: AppColors.secondary),),
+                          ),
+                        )
+                      ],
+                    ),
                   ) : Container(),
 
                   SizedBox(height: 50,),
@@ -689,6 +643,7 @@ class _WalletState extends State<Wallet> with SingleTickerProviderStateMixin {
           },
           onReceiveMoneyPressed: () {
 
+            Navigator.push(context, MaterialPageRoute(builder: (context) => ReceiveMoney()));
           },
           onAddFundsPressed: () {
 

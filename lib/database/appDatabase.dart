@@ -26,6 +26,11 @@ class AppDatabase {
   static String lng = "lng";
   static String created = "created";
   static String updated = "updated";
+  static String rating = "rating";
+  static String ratingCount = "ratingCount";
+  static String ratingSessions = "ratingSessions";
+  static String lastRating = "lastRating";
+
 
   static String friends = "friends";
   static String userID = "userID";
@@ -64,6 +69,13 @@ class AppDatabase {
   static String previousClose = "previousClose";
   static String change = "change";
   static String changeP = "change_p";
+
+
+  static String ratings = "ratings";
+
+  static String ratingsHistory = "ratingsHistory";
+
+  static String ratingNumber = "ratingNumber";
 
 
 

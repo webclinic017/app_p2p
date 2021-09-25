@@ -219,6 +219,32 @@ class CurrenciesManager {
     "Aluminum"
   ];
 
+
+  static List<CurrencyData> loadMainFiats () {
+
+    return [CurrencyData(code: "USD.FOREX", name: "United States Dollar"),
+    CurrencyData(code: "EUR.FOREX", name: "EURO"),
+    CurrencyData(code: "GBP.FOREX", name: "British Pound"),
+    CurrencyData(code: "CAD.FOREX", name: "Canadian Dollar"),
+    CurrencyData(code: "AUD.FOREX", name: "Australian Dollar")];
+  }
+
+  static List<CurrencyData> loadMainCrypto() {
+    return [CurrencyData(code: "BTC-USD.CC", name: "Bitcoin"),
+      CurrencyData(code: "ETH-USD.CC", name: "Ethereum"),
+      CurrencyData(code: "ADA-USD.CC", name: "Cardano"),
+      CurrencyData(code: "BNB-USD.CC", name: "Binance Coin"),
+      CurrencyData(code: "USDT-USD.CC", name: "Tether")];
+  }
+
+  static List<CurrencyData> loadMainAssets() {
+    return [CurrencyData(code: "KC.COMM", name: "Coffee"),
+      CurrencyData(code: "GC.COMM", name: "Gold"),
+      CurrencyData(code: "HG.COMM", name: "Copper"),
+      CurrencyData(code: "MALTR.COMM", name: "Aluminum"),
+      CurrencyData(code: "CL.COMM", name: "Crude Oil")];
+  }
+
   static Future<List<Map<String, dynamic>>> loadFiatCurrencies () async{
 
     List<Map<String, dynamic>> _fiatMapList = [];

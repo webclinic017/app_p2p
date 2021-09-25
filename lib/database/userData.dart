@@ -18,6 +18,7 @@ class UserData {
   bool? active;
   GeoPoint? position;
 
+  double? rating;
 
 
 
@@ -43,6 +44,11 @@ class UserData {
       position = null;
     }
 
+    try {
+      rating = double.parse(doc.data()?[AppDatabase.rating].toString() as String);
+    }catch(e) {
+      rating = 0.0;
+    }
 
 
 

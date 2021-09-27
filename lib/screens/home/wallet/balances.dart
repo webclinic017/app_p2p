@@ -1,4 +1,5 @@
 import 'package:app_p2p/components/balanceItem.dart';
+import 'package:app_p2p/components/loadMore.dart';
 import 'package:app_p2p/database/appDatabase.dart';
 import 'package:app_p2p/database/balanceData.dart';
 import 'package:app_p2p/database/currencyData.dart';
@@ -24,6 +25,8 @@ class _BalancesState extends State<Balances> {
   int? type;
   _BalancesState({this.type});
 
+  bool _renderState = false;
+
 
   String get balanceType {
     if(type == 0) {
@@ -32,6 +35,8 @@ class _BalancesState extends State<Balances> {
       return loc(context, "more_crypto");
     }else if(type == 2) {
       return loc(context, "more_assets");
+    }else if(type == 3) {
+      return loc(context, "shares");
     }
 
     return loc(context, "fiat");
@@ -49,6 +54,8 @@ class _BalancesState extends State<Balances> {
       loadCryptoCurrencies();
     }else if(type == 2) {
       loadAssetsCurrencies();
+    }else if(type == 3) {
+      loadSharesRemotely();
     }
     super.initState();
   }
@@ -288,6 +295,11 @@ class _BalancesState extends State<Balances> {
 
   void loadAssetsRemotely() async{
 
+    setState(() {
+      _loadingBalances = true;
+    });
+
+
     List<CurrencyData> _currencyList = [];
 
     for(Map<String, dynamic> commoditiesMap in await CurrenciesManager.loadAssets()) {
@@ -319,6 +331,214 @@ class _BalancesState extends State<Balances> {
     LocalDatabase.insertAll(_currencyList, 2);
     print("Assets loaded remotely");
 
+  }
+
+
+  int _sharesIndex = 0;
+  void loadShares() {
+    setState(() {
+      _loadingBalances = true;
+    });
+
+    LocalDatabase.loadCurrencies(3, limit: 50).then((currencies) {
+
+      _sharesIndex = 0;
+      if(currencies.length > 0) {
+
+        for(CurrencyData shares in currencies) {
+          BalanceData balanceData = BalanceData(amount: 0.0,
+              currencyName: shares.name, currencyCode: shares.code,
+              isFiat: false,
+              created: DateTime.now());
+
+          _balances.add(BalanceItem(data: balanceData,
+            onPressed: (data, exchange) {
+
+              Navigator.push(context, MaterialPageRoute(builder: (context) =>
+                  DisplayBalance(data: data, exchangeData: exchange, onBalanceOpened: () {
+
+                  },)));
+            }, onlyShow: true,));
+          _balances.add(SizedBox(height: 20,));
+
+          _sharesIndex ++;
+        }
+        if(currencies.length >= 50) {
+          setState(() {
+            _balances.add(LoadMore(onLoad: () {
+
+              loadMoreShares();
+            },));
+          });
+        }
+
+        setState(() {
+          _loadingBalances = false;
+          _renderState = !_renderState;
+        });
+
+        print("Shares loaded locally!");
+
+
+      }else {
+        loadSharesRemotely();
+      }
+
+    });
+
+  }
+
+  void loadMoreShares() {
+
+    LocalDatabase.loadCurrenciesAfterIndex(3, limit: 50, from: _sharesIndex).then((currencies) {
+
+
+      if(currencies.length > 0) {
+
+        for(CurrencyData shares in currencies) {
+          BalanceData balanceData = BalanceData(amount: 0.0,
+              currencyName: shares.name, currencyCode: shares.code,
+              isFiat: false,
+              created: DateTime.now());
+
+          _balances.add(BalanceItem(data: balanceData,
+            onPressed: (data, exchange) {
+
+              Navigator.push(context, MaterialPageRoute(builder: (context) =>
+                  DisplayBalance(data: data, exchangeData: exchange, onBalanceOpened: () {
+
+                  },)));
+            }, onlyShow: true,));
+          _balances.add(SizedBox(height: 20,));
+
+          _sharesIndex ++;
+        }
+        if(currencies.length >= 50) {
+          setState(() {
+            _balances.add(LoadMore(onLoad: () {
+
+              loadMoreShares();
+            },));
+          });
+        }
+
+        setState(() {
+          _renderState = !_renderState;
+        });
+
+
+        print("Shares loaded locally!");
+
+
+      }else {
+        loadSharesRemotely();
+      }
+
+    });
+
+  }
+
+
+  void loadSharesRemotely() async{
+    List<CurrencyData> _sharesList = [];
+
+    setState(() {
+      _loadingBalances = true;
+    });
+
+    int shareCount = 0;
+    _sharesIndex = 0;
+    for(Map<String, dynamic> shares in await CurrenciesManager.loadShares()) {
+
+      CurrencyData commodities = CurrencyData.fromMap(shares);
+
+      _sharesList.add(commodities);
+
+      BalanceData balanceData = BalanceData(amount: 0.0,
+          currencyName: commodities.name, currencyCode: commodities.code,
+          isFiat: false,
+          created: DateTime.now());
+
+      _balances.add(BalanceItem(data: balanceData,
+        onPressed: (data, exchange) {
+
+          Navigator.push(context, MaterialPageRoute(builder: (context) =>
+              DisplayBalance(data: data, exchangeData: exchange, onBalanceOpened: () {
+
+              },)));
+        }, onlyShow: true,));
+      _balances.add(SizedBox(height: 20,));
+      shareCount ++;
+      _sharesIndex ++;
+    }
+
+
+
+    if(shareCount >= 50) {
+      setState(() {
+        _balances.add(LoadMore(onLoad: () {
+
+          loadMoreSharesRemotely();
+        },));
+
+      });
+    }
+
+    setState(() {
+      _loadingBalances = false;
+      _renderState = !_renderState;
+    });
+
+    LocalDatabase.insertAll(_sharesList, 2);
+    print("Shares loaded remotely");
+  }
+
+
+  void loadMoreSharesRemotely () async{
+    List<CurrencyData> _sharesList = [];
+
+
+
+    int shareCount = 0;
+    for(Map<String, dynamic> shares in await CurrenciesManager.loadSharesWithOffset(_sharesIndex)) {
+
+      CurrencyData commodities = CurrencyData.fromMap(shares);
+
+      _sharesList.add(commodities);
+
+      BalanceData balanceData = BalanceData(amount: 0.0,
+          currencyName: commodities.name, currencyCode: commodities.code,
+          isFiat: false,
+          created: DateTime.now());
+
+      _balances.add(BalanceItem(data: balanceData,
+        onPressed: (data, exchange) {
+
+          Navigator.push(context, MaterialPageRoute(builder: (context) =>
+              DisplayBalance(data: data, exchangeData: exchange, onBalanceOpened: () {
+
+              },)));
+        }, onlyShow: true,));
+      _balances.add(SizedBox(height: 20,));
+      shareCount ++;
+      _sharesIndex ++;
+    }
+
+    if(shareCount >= 50) {
+      setState(() {
+        _balances.add(LoadMore(onLoad: () {
+
+          loadMoreSharesRemotely();
+        },));
+      });
+    }
+
+    setState(() {
+      _renderState = !_renderState;
+    });
+
+    LocalDatabase.insertAll(_sharesList, 2);
+    print("Shares loaded remotely");
   }
 
   @override
@@ -366,8 +586,12 @@ class _BalancesState extends State<Balances> {
                   Expanded(
                     child: Container(
                       margin: EdgeInsets.fromLTRB(20, 0, 20, 0),
-                      child: ListView(
+                      child: !_renderState? ListView(
                         children: _balances,
+                      ) : Container(
+                        child: ListView(
+                          children: _balances,
+                        ),
                       ),
                     )
                   )

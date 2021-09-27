@@ -290,7 +290,8 @@ class AppLocalizations {
       "paired_devices" : "Paired Devices",
       "available_devices" : "Available Devices",
       "loading_paired_devices" : "Loading paired devices",
-      "connecting" : "Connecting"
+      "connecting" : "Connecting",
+      "shares" : "Shares"
 
 
 
@@ -560,7 +561,8 @@ class AppLocalizations {
       "paired_devices" : "Dispositivos Enlazados",
       "available_devices" : "Dispositivos Disponibles",
       "loading_paired_devices" : "Cargando dispositivos enlazados",
-      "connecting" : "Conectando"
+      "connecting" : "Conectando",
+      "shares" : "Acciones"
 
 
 

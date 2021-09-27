@@ -245,6 +245,15 @@ class CurrenciesManager {
       CurrencyData(code: "CL.COMM", name: "Crude Oil")];
   }
 
+  static List<CurrencyData> loadMainShares() {
+    return [CurrencyData(code: 'AAPL.US', name: 'Apple Inc'),
+      CurrencyData(code:'TSLA.US', name: 'Tesla Inc'),
+      CurrencyData(code: 'AMZN.US', name: 'Amazon.com Inc'),
+      CurrencyData(code: 'MSFT.US', name: 'Microsoft Corporation'),
+      CurrencyData(code: 'PYPL.US', name: 'PayPal Holdings Inc')];
+  }
+
+
   static Future<List<Map<String, dynamic>>> loadFiatCurrencies () async{
 
     List<Map<String, dynamic>> _fiatMapList = [];
@@ -362,6 +371,84 @@ class CurrenciesManager {
     }
 
     return _commoditiesMapList;
+
+
+
+  }
+
+  static Future<List<Map<String, dynamic>>> loadShares() async{
+    List<Map<String, dynamic>> _sharesMapList = [];
+
+    var request = await Dio().get("https://eodhistoricaldata.com/api/exchange-symbol-list/US?api_token=${AppDatabase.apiToken}");
+
+    int counter = 0;
+    for(String share in (request.data as String).split("\n")) {
+      List<String> elements = share.split(",");
+
+      if(counter > 0) {
+
+        if (elements.length >= 5) {
+          _sharesMapList.add({
+            "code": elements[0],
+            "name": elements[1],
+            "country": elements[2],
+            "exchange": elements[3],
+            "currency": elements[4],
+
+          });
+        }
+
+
+      }
+
+      counter ++;
+
+
+
+
+
+    }
+
+    return _sharesMapList.sublist(0, 50);
+
+
+
+  }
+
+  static Future<List<Map<String, dynamic>>> loadSharesWithOffset(int offset) async{
+    List<Map<String, dynamic>> _sharesMapList = [];
+
+    var request = await Dio().get("https://eodhistoricaldata.com/api/exchange-symbol-list/US?api_token=${AppDatabase.apiToken}");
+
+    int counter = 0;
+    for(String share in (request.data as String).split("\n")) {
+      List<String> elements = share.split(",");
+
+      if(counter > 0) {
+
+        if (elements.length >= 5) {
+          _sharesMapList.add({
+            "code": elements[0],
+            "name": elements[1],
+            "country": elements[2],
+            "exchange": elements[3],
+            "currency": elements[4],
+
+          });
+        }
+
+
+      }
+
+      counter ++;
+
+
+
+
+
+    }
+
+    return _sharesMapList.sublist(offset, offset + 50);
 
 
 

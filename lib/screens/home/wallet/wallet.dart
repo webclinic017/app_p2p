@@ -279,6 +279,40 @@ class _WalletState extends State<Wallet> with SingleTickerProviderStateMixin {
 
 
 
+  List<Widget> _shares = [];
+
+  void loadShares() async{
+
+
+
+    List<CurrencyData> _currencyList = [];
+
+    for(CurrencyData shares in CurrenciesManager.loadMainShares()) {
+
+
+
+      _currencyList.add(shares);
+
+      BalanceData balanceData = BalanceData(amount: 0.0,
+          currencyName: shares.name, currencyCode: shares.code,
+          isFiat: false,
+          created: DateTime.now());
+
+      _shares.add(BalanceItem(data: balanceData,
+        onPressed: (data, exchange) {
+
+          Navigator.push(context, MaterialPageRoute(builder: (context) =>
+              DisplayBalance(data: data, exchangeData: exchange, onBalanceOpened: () {
+                calculatingUSDBalance();
+              },)));
+        }, onlyShow: true,));
+      _shares.add(SizedBox(height: 20,));
+    }
+
+
+
+  }
+
 
 
   TabController? _tabController;
@@ -289,8 +323,9 @@ class _WalletState extends State<Wallet> with SingleTickerProviderStateMixin {
     loadFiatCurrencies();
     loadCryptoCurrencies();
     loadAssetsCurrencies();
+    loadShares();
 
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(length: 4, vsync: this);
 
     super.initState();
   }
@@ -429,6 +464,7 @@ class _WalletState extends State<Wallet> with SingleTickerProviderStateMixin {
                         Tab(child: Text(loc(context, "fiat"), style: TextStyle(color: Colors.black),),),
                         Tab(child: Text(loc(context, "crypto"), style: TextStyle(color: Colors.black),),),
                         Tab(child: Text(loc(context, "assets"), style: TextStyle(color: Colors.black),),),
+                        Tab(child: Text(loc(context, "shares"), style: TextStyle(color: Colors.black),),),
                       ],
                       onTap: (index) {
                         setState(() {
@@ -569,6 +605,53 @@ class _WalletState extends State<Wallet> with SingleTickerProviderStateMixin {
 
                               Navigator.push(context, MaterialPageRoute(builder: (context) => Balances(
                                 type: 2,
+                              )));
+                            },
+                            child: Text(loc(context, "see_more"),
+                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600,
+                                  color: AppColors.secondary),),
+                          ),
+                        )
+                      ],
+                    ),
+                  ) : Container(),
+
+                  _selectedIndex == 3? SizedBox(height: 10,) : Container(),
+
+                  _selectedIndex == 3? Container(
+                      width: double.infinity,
+                      margin: EdgeInsets.fromLTRB(20, 0, 20, 0),
+                      child: _loadingBalances? Column(
+                        children: [
+                          BalanceItemPlaceHolder(),
+                          SizedBox(height: 10,),
+                          BalanceItemPlaceHolder(),
+                          SizedBox(height: 10,),
+                          BalanceItemPlaceHolder(),
+
+
+                        ],
+                      ) : Column(
+                        children: _shares,
+                      )
+                  ) : Container(),
+
+                  _selectedIndex == 3? SizedBox(height: 10,) : Container(),
+
+                  _selectedIndex == 3? Container(
+                    width: double.infinity,
+                    height: 30,
+                    margin: EdgeInsets.fromLTRB(20, 0, 20, 0),
+                    child: Row(
+                      children: [
+                        Material(
+                          color: Colors.white.withOpacity(0.0),
+                          child: InkWell(
+                            borderRadius: BorderRadius.circular(10),
+                            onTap: () {
+
+                              Navigator.push(context, MaterialPageRoute(builder: (context) => Balances(
+                                type: 3,
                               )));
                             },
                             child: Text(loc(context, "see_more"),

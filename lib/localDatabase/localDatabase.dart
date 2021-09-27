@@ -123,7 +123,7 @@ class LocalDatabase {
   }
 
 
-  static Future<List<CurrencyData>> loadCurrencies(int type) async {
+  static Future<List<CurrencyData>> loadCurrencies(int type, {limit: int}) async {
     var db = await database;
 
     String tableName = "$fiatsTableName";
@@ -138,7 +138,8 @@ class LocalDatabase {
 
 
 
-    List<Map<String, Object?>> maps = await db.query(tableName);
+
+    List<Map<String, Object?>> maps = await db.query(tableName, limit: limit);
 
     return List.generate(maps.length, (index) => CurrencyData(
       name: maps[index]["name"] as String,
@@ -148,6 +149,30 @@ class LocalDatabase {
   }
 
 
+  static Future<List<CurrencyData>> loadCurrenciesAfterIndex(int type, {limit: int, from: int}) async {
+    var db = await database;
+
+    String tableName = "$fiatsTableName";
+
+    if(type == 0) {
+      tableName = "$fiatsTableName";
+    }else if(type == 1) {
+      tableName = "$cryptosTableName";
+    }else if(type == 2) {
+      tableName = "$assetsTableName";
+    }
+
+
+
+
+    List<Map<String, Object?>> maps = await db.query(tableName, limit: limit, offset: from);
+
+    return List.generate(maps.length, (index) => CurrencyData(
+        name: maps[index]["name"] as String,
+        code: maps[index]["code"] as String
+    ));
+
+  }
   
   
   

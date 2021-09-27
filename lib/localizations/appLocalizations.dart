@@ -283,7 +283,14 @@ class AppLocalizations {
       "send_you" : "Sent you",
       "sent_you_a_message" : "Sent you a message",
       "new_message" : "New message",
-      "notifications" : "Notifications"
+      "notifications" : "Notifications",
+      "search_devices" : "Search Devices",
+      "scanning_devices" : "Scanning Devices",
+      "find_devices_uppercase" : "FIND DEVICES",
+      "paired_devices" : "Paired Devices",
+      "available_devices" : "Available Devices",
+      "loading_paired_devices" : "Loading paired devices",
+      "connecting" : "Connecting"
 
 
 
@@ -546,7 +553,14 @@ class AppLocalizations {
       "send_you" : "Te envió",
       "sent_you_a_message" : "Te envió un mensaje",
       "new_message" : "Nuevo mensaje",
-      "notifications" : "Notificaciones"
+      "notifications" : "Notificaciones",
+      "search_devices" : "Buscar Dispositivos",
+      "scanning_devices" : "Escaneando Dispositivos",
+      "find_devices_uppercase" : "ENCONTRAR DISPOSITIVOS",
+      "paired_devices" : "Dispositivos Enlazados",
+      "available_devices" : "Dispositivos Disponibles",
+      "loading_paired_devices" : "Cargando dispositivos enlazados",
+      "connecting" : "Conectando"
 
 
 

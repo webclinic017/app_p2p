@@ -274,6 +274,15 @@ class _ConversationScreenState extends State<ConversationScreen> {
                 child: Row(
                   children: [
                     SizedBox(width: 20,),
+
+                    Container(
+                      width: 45,
+                      height: 45,
+                      decoration: BoxDecoration(
+                        color: Colors.white
+                      ),
+                    ),
+
                     Expanded(
                       child: Container(
                         width: double.infinity,

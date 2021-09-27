@@ -1,9 +1,11 @@
+import 'package:app_p2p/components/button.dart';
 import 'package:app_p2p/components/chatItem.dart';
 import 'package:app_p2p/database/appDatabase.dart';
 import 'package:app_p2p/database/chatData.dart';
 import 'package:app_p2p/database/messageData.dart';
 import 'package:app_p2p/localDatabase/localDatabase.dart';
 import 'package:app_p2p/localizations/appLocalizations.dart';
+import 'package:app_p2p/screens/home/bluetooth/bluetoothScanner.dart';
 import 'package:app_p2p/screens/home/conversationScreen.dart';
 import 'package:app_p2p/screens/home/newChat.dart';
 import 'package:app_p2p/screens/login/login.dart';
@@ -53,6 +55,23 @@ class _ChatsScreenState extends State<ChatsScreen> {
         _chats.clear();
         _chats.add(SizedBox(height: 20,));
       });
+
+      setState(() {
+        _chats.add(Button(width: double.infinity, height: 50,
+        color: AppColors.secondary,
+        text: loc(context, "find_devices_uppercase"),
+        margin: 20,
+        onPressed: () {
+
+          Navigator.push(context, MaterialPageRoute(builder: (context) =>
+          BluetoothScanner()));
+        },),);
+
+        setState(() {
+          _chats.add(SizedBox(height: 10,));
+        });
+      });
+
       for(var doc in event.docs) {
         ChatData chatData = ChatData.fromDoc(doc);
 

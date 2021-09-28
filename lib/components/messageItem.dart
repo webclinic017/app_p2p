@@ -9,17 +9,19 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class MessageItem extends StatefulWidget {
 
   MessageData? data;
   String? id;
 
+
   MessageItem({this.data, this.id});
 
   @override
   _MessageItemState createState() => _MessageItemState(
-    data: data, id: id
+    data: data, id: id,
   );
 }
 
@@ -27,9 +29,21 @@ class _MessageItemState extends State<MessageItem> {
 
   MessageData? data;
   String? id;
+
+
   _MessageItemState({this.data, this.id});
 
 
+
+
+  bool get isImage {
+    if(data?.fileUrl == null) {
+      return false;
+    }
+
+    return ((data?.fileExtension as String).contains("jpg") || (data?.fileExtension as String).contains("png"));
+
+  }
 
 
 
@@ -83,10 +97,25 @@ class _MessageItemState extends State<MessageItem> {
                 boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05),
                     spreadRadius: 1, blurRadius: 6, offset: Offset(0, 6))]
             ),
-            child: Container(
-              margin: EdgeInsets.fromLTRB(20, 0, 20, 0),
-              child: Text(data?.message as String, style: TextStyle(color: Colors.white),),
-            ),
+            child: Material(
+              color: Colors.white.withOpacity(0.0),
+              child: InkWell(
+                borderRadius: BorderRadius.circular(25),
+                onTap: data?.fileUrl == null? null : () {
+
+                  launch(data?.fileUrl as String);
+                },
+                child: Container(
+                  margin: EdgeInsets.fromLTRB(20, 0, 20, 0),
+                  child: data?.fileUrl == null? Text(data?.message as String,
+                  style: TextStyle(color: Colors.white),) : (isImage? _messageImage :
+                  Text(data?.fileName as String,
+
+                    style: TextStyle(color: Colors.blue,
+                        fontWeight: FontWeight.w600),)),
+                ),
+              ),
+            )
           )
       ),
 
@@ -111,10 +140,24 @@ class _MessageItemState extends State<MessageItem> {
                 boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05),
                     spreadRadius: 1, blurRadius: 6, offset: Offset(0, 6))]
             ),
-            child: Container(
-              margin: EdgeInsets.fromLTRB(20, 0, 20, 0),
-              child: Text(data?.message as String),
-            ),
+            child: Material(
+              color: Colors.white.withOpacity(0.0),
+              child: InkWell(
+                borderRadius: BorderRadius.circular(25),
+                onTap: data?.fileUrl == null? null : () {
+
+                  launch(data?.fileUrl as String);
+                },
+                child: Container(
+                  margin: EdgeInsets.fromLTRB(20, 0, 20, 0),
+                  child: data?.fileUrl == null? Text(data?.message as String) : (isImage? _messageImage :
+                  Text(data?.fileName as String,
+
+                    style: TextStyle(color: Colors.blue,
+                    fontWeight: FontWeight.w600),)),
+                ),
+              ),
+            )
           )
       ),
 
@@ -140,6 +183,8 @@ class _MessageItemState extends State<MessageItem> {
   bool get isMine => data?.senderID == userID;
 
 
+  Image? _messageImage;
+
   @override
   void initState() {
 
@@ -150,7 +195,21 @@ class _MessageItemState extends State<MessageItem> {
     if(!isMine && data?.seen == false) {
       setSeen();
     }
+
+    if(isImage) {
+      loadMessageImage();
+    }
+
+
     super.initState();
+  }
+
+  void loadMessageImage () {
+
+    setState(() {
+      _messageImage = Image.network(data?.fileUrl as String, width: 200,
+      fit: BoxFit.fitWidth,);
+    });
   }
 
 
@@ -203,7 +262,7 @@ class _MessageItemState extends State<MessageItem> {
     batch.update(chatDoc, {
       AppDatabase.lastMessage: {
         AppDatabase.chatID: data?.chatID,
-        AppDatabase.message: data?.message,
+        AppDatabase.message: data?.filePath == null? data?.message : data?.fileName,
         AppDatabase.senderID: data?.senderID,
         AppDatabase.seen: data?.seen,
         AppDatabase.created: data?.created
@@ -240,7 +299,7 @@ class _MessageItemState extends State<MessageItem> {
 
       }
 
-      String title = "${currentUserData?.firstName} ${currentUserData?.lastName} ${loc(context, "sent_you_a_message")}";
+      String title = "${currentUserData?.firstName} ${currentUserData?.lastName} te envió un mensaje";
       String content = data?.message as String;
 
       firestore.collection(AppDatabase.users)

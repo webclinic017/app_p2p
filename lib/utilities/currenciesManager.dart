@@ -376,79 +376,50 @@ class CurrenciesManager {
 
   }
 
-  static Future<List<Map<String, dynamic>>> loadShares() async{
+  static List<Map<String, dynamic>> _sharesData = [];
+
+  static Future<List<Map<String, dynamic>>> loadShares() async {
     List<Map<String, dynamic>> _sharesMapList = [];
 
-    var request = await Dio().get("https://eodhistoricaldata.com/api/exchange-symbol-list/US?api_token=${AppDatabase.apiToken}");
+    if (_sharesData.length > 0) {
+      return _sharesData;
+    } else {
+      var request = await Dio().get(
+          "https://eodhistoricaldata.com/api/exchange-symbol-list/US?api_token=${AppDatabase
+              .apiToken}");
 
-    int counter = 0;
-    for(String share in (request.data as String).split("\n")) {
-      List<String> elements = share.split(",");
+      int counter = 0;
+      for (String share in (request.data as String).split("\n")) {
+        List<String> elements = share.split(",");
 
-      if(counter > 0) {
+        if (counter > 0) {
+          if (elements.length >= 5) {
+            _sharesMapList.add({
+              "code": elements[0],
+              "name": elements[1],
+              "country": elements[2],
+              "exchange": "US",
+              "currency": elements[4],
 
-        if (elements.length >= 5) {
-          _sharesMapList.add({
-            "code": elements[0],
-            "name": elements[1],
-            "country": elements[2],
-            "exchange": elements[3],
-            "currency": elements[4],
-
-          });
+            });
+          }
         }
+
+        counter ++;
 
 
       }
 
-      counter ++;
+      _sharesData = _sharesMapList;
 
-
-
-
-
+      return _sharesMapList.sublist(0, 50);
     }
-
-    return _sharesMapList.sublist(0, 50);
-
-
-
   }
 
   static Future<List<Map<String, dynamic>>> loadSharesWithOffset(int offset) async{
-    List<Map<String, dynamic>> _sharesMapList = [];
-
-    var request = await Dio().get("https://eodhistoricaldata.com/api/exchange-symbol-list/US?api_token=${AppDatabase.apiToken}");
-
-    int counter = 0;
-    for(String share in (request.data as String).split("\n")) {
-      List<String> elements = share.split(",");
-
-      if(counter > 0) {
-
-        if (elements.length >= 5) {
-          _sharesMapList.add({
-            "code": elements[0],
-            "name": elements[1],
-            "country": elements[2],
-            "exchange": elements[3],
-            "currency": elements[4],
-
-          });
-        }
 
 
-      }
-
-      counter ++;
-
-
-
-
-
-    }
-
-    return _sharesMapList.sublist(offset, offset + 50);
+    return _sharesData.sublist(offset, offset + 50);
 
 
 

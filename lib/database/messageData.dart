@@ -9,10 +9,16 @@ class MessageData {
   String? message;
   String? senderID;
   bool? seen;
+  String? fileUrl;
+  String? filePath;
+  String? fileExtension;
+  String? fileName;
   DateTime? created;
 
 
-  MessageData({this.id, this.chatID, this.message, this.senderID, this.seen, this.created});
+
+  MessageData({this.id, this.chatID, this.message, this.senderID, this.seen,
+    this.fileUrl, this.filePath, this.fileExtension, this.fileName, this.created});
 
 
 
@@ -23,6 +29,10 @@ class MessageData {
     message = doc.data()?[AppDatabase.message];
     senderID = doc.data()?[AppDatabase.senderID];
     seen = doc.data()?[AppDatabase.seen];
+    fileUrl = doc.data()?[AppDatabase.fileUrl];
+    filePath = doc.data()?[AppDatabase.filePath];
+    fileExtension = doc.data()?[AppDatabase.fileExtension];
+    fileName = doc.data()?[AppDatabase.fileName];
     created = (doc.data()?[AppDatabase.created] as Timestamp).toDate();
 
 
@@ -35,6 +45,30 @@ class MessageData {
     message = map[AppDatabase.message];
     senderID = map[AppDatabase.senderID];
     seen = map[AppDatabase.seen];
+    try {
+      fileUrl = map[AppDatabase.fileUrl];
+    }catch(e) {
+      fileUrl = null;
+    }
+
+    try {
+      filePath = map[AppDatabase.filePath];
+    }catch(e) {
+      filePath = null;
+    }
+
+    try {
+      fileExtension = map[AppDatabase.fileExtension];
+    }catch(e) {
+      fileExtension = null;
+    }
+
+    try {
+      fileName = map[AppDatabase.fileName];
+    }catch(e) {
+      fileName = null;
+    }
+
     created = (map[AppDatabase.created] as Timestamp).toDate();
   }
 
@@ -43,6 +77,10 @@ class MessageData {
     AppDatabase.message: message,
     AppDatabase.senderID: senderID,
     AppDatabase.seen: seen,
+    AppDatabase.fileUrl: fileUrl,
+    AppDatabase.filePath: filePath,
+    AppDatabase.fileExtension: fileExtension,
+    AppDatabase.fileName: fileName,
     AppDatabase.created: created
   };
 

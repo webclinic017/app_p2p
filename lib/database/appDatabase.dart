@@ -50,6 +50,10 @@ class AppDatabase {
   static String message  ="message";
   static String senderID = "senderID";
   static String seen = "seen";
+  static String fileUrl = "fileUrl";
+  static String filePath = "filePath";
+  static String fileExtension = "fileExtension";
+  static String fileName = "fileName";
 
   static String balances = "balances";
   static String amount = "amount";
@@ -90,6 +94,11 @@ class AppDatabase {
   static String cryptocurrency = "cryptocurrency";
 
 
+  static String transactions = "transactions";
+  static String type = "type";
+  static String originBalance = "originBalance";
+  static String destinationBalance = "destinationBalance";
+  static String receiverID = "receiverID";
 
 
 }

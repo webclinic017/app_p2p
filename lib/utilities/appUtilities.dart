@@ -30,6 +30,10 @@ class AppUtilities {
     return "${date.hour}:${date.minute < 10? "0${date.minute}" : date.minute}";
   }
 
+  static String dateFormatted(DateTime date) {
+    return "${date.day}/${date.month}/${date.year} ${formatDateToTime(date)}";
+  }
+
 
   static List<String> generateKeywords (String base) {
     List<String> result = [];

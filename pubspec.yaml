@@ -51,6 +51,7 @@ dependencies:
   image_picker: ^0.8.3+1
   firebase_messaging: ^10.0.7
   flutter_local_notifications: ^8.2.0
+  file_picker: ^4.1.2
 
 
 
@@ -84,6 +85,7 @@ flutter:
     - assets/mobile_payment.png
     - assets/card_payment.png
     - assets/crypto_payment.png
+    - assets/no_transactions.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

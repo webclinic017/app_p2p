@@ -631,9 +631,37 @@ class _SendMoneyState extends State<SendMoney> {
         AppDatabase.amount: newBalance
       });
 
+      var senderTransactionRef = firestore.collection(AppDatabase.users).doc(userID)
+      .collection(AppDatabase.transactions).doc();
+
+      var receiverTransactionRef = firestore.collection(AppDatabase.users).doc(_receiverUser?.id)
+      .collection(AppDatabase.transactions).doc();
+
+      transaction.set(senderTransactionRef, {
+        AppDatabase.type: "send",
+        AppDatabase.senderID: userID,
+        AppDatabase.originBalance: _fundsSource?.id,
+        AppDatabase.receiverID: _receiverUser?.id,
+        AppDatabase.destinationBalance: _targetWallet?.id,
+        AppDatabase.amount: amountToAdd,
+        AppDatabase.created: DateTime.now()
+      });
 
 
-    }).then((value) {
+      transaction.set(receiverTransactionRef, {
+        AppDatabase.type: "receive",
+        AppDatabase.senderID: userID,
+        AppDatabase.originBalance: _fundsSource?.id,
+        AppDatabase.receiverID: _receiverUser?.id,
+        AppDatabase.amount: amountToAdd,
+        AppDatabase.destinationBalance: _targetWallet?.id,
+        AppDatabase.created: DateTime.now()
+      });
+
+
+
+
+    }).then((value) async{
 
       setState(() {
         _isLoading = false;
@@ -649,7 +677,37 @@ class _SendMoneyState extends State<SendMoney> {
           fontSize: 16.0
       );
 
+
+
       double amountToAdd = _amount / (_targetWallet?.isFiat == false?(_receiverExchange?.close as double) : (1.0/(_receiverExchange?.close as double)));
+
+      String title = "${currentUserData?.firstName} ${currentUserData?.lastName} te envió fondos";
+      String content = "${amountToAdd} ${_targetWallet?.currencyCode?.substring(0, 3)} fueron agregaros a tu balance";
+
+      firestore.collection(AppDatabase.users)
+          .doc(_receiverUser?.id).collection(AppDatabase.notifications).doc().set({
+        AppDatabase.title: title,
+        AppDatabase.content: content,
+        AppDatabase.seen: false,
+        AppDatabase.created: DateTime.now()
+      });
+
+
+      try {
+        var response = await Dio().post("https://cuidabu.herokuapp.com/sendNotification",data: {
+          "receiver" : _receiverUser?.id,
+          "title" : title,
+          "content" : content
+        });
+        print("Notification sent!");
+
+
+      }catch(e) {
+
+        print("Error sending message: ${e.toString()}");
+
+      }
+
 
       Navigator.pushAndRemoveUntil(context, MaterialPageRoute(
         builder: (context) => Home(currentScreen: 2,)

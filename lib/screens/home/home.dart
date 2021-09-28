@@ -5,6 +5,7 @@ import 'package:app_p2p/screens/home/chatsScreen.dart';
 import 'package:app_p2p/screens/home/notifications.dart';
 import 'package:app_p2p/screens/home/profile/profile.dart';
 import 'package:app_p2p/screens/home/social/social.dart';
+import 'package:app_p2p/screens/home/transactions/transactions.dart';
 import 'package:app_p2p/screens/home/wallet/wallet.dart';
 import 'package:app_p2p/screens/login/login.dart';
 import 'package:app_p2p/utilities/appColors.dart';
@@ -294,13 +295,17 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin{
           },),
           PopupMenuButton(itemBuilder: (context) => [
             PopupMenuItem(child: Text(loc(context, "profile"),),
-            value: "profile",)
+            value: "profile",),
+            PopupMenuItem(child: Text(loc(context, "transactions"),),
+              value: "transactions",)
           ],
           onSelected: (value) {
 
             if(value  == "profile") {
 
               Navigator.push(context, MaterialPageRoute(builder: (context) => Profile()));
+            }else if(value == "transactions") {
+              Navigator.push(context, MaterialPageRoute(builder: (context) => Transactions()));
             }
           },)
         ],

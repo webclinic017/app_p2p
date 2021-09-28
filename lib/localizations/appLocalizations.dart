@@ -291,7 +291,20 @@ class AppLocalizations {
       "available_devices" : "Available Devices",
       "loading_paired_devices" : "Loading paired devices",
       "connecting" : "Connecting",
-      "shares" : "Shares"
+      "shares" : "Shares",
+      "search_fiat" : "Search Fiat",
+      "search_crypto" : "Search Crypto",
+      "search_asset" : "Search Asset",
+      "search_share" : "Search Share",
+      "uploading_file" : "Uploading File",
+      "file_uploaded" : "File Uploaded",
+      "transactions" : "Transactions",
+      "sent_to" : "sent to",
+      "received from" : "received from",
+      "sent" : "Sent",
+      "received" : 'Received',
+      "no_transactions_yet" : "No transactions yet"
+
 
 
 
@@ -562,7 +575,19 @@ class AppLocalizations {
       "available_devices" : "Dispositivos Disponibles",
       "loading_paired_devices" : "Cargando dispositivos enlazados",
       "connecting" : "Conectando",
-      "shares" : "Acciones"
+      "shares" : "Acciones",
+      "search_fiat" : "Buscar Fiat",
+      "search_crypto" : "Buscar Crypto",
+      "search_asset" : "Buscar Asset",
+      "search_share" : "Buscar Acción",
+      "uploading_file" : "Subiendo Archivo",
+      "file_uploaded" : "Archivo Subido",
+      "transactions" : "Transacciones",
+      "sent_to" : "enviados a",
+      "received from" : "recibidos de",
+      "sent" : "Enviado",
+      "received" : 'Recibido',
+      "no_transactions_yet" : "Sin transacciones aún"
 
 
 

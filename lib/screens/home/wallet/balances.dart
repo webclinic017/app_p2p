@@ -55,7 +55,7 @@ class _BalancesState extends State<Balances> {
     }else if(type == 2) {
       loadAssetsCurrencies();
     }else if(type == 3) {
-      loadSharesRemotely();
+      loadShares();
     }
     super.initState();
   }
@@ -69,8 +69,9 @@ class _BalancesState extends State<Balances> {
 
     setState(() {
       _loadingBalances = true;
+      _balances.clear();
     });
-    LocalDatabase.loadCurrencies(0).then((currencies) {
+    LocalDatabase.loadCurrencies(0, limit: null).then((currencies) {
 
       if(currencies.length > 0) {
 
@@ -113,6 +114,7 @@ class _BalancesState extends State<Balances> {
   void loadFiatRemotely () async{
     setState(() {
       _loadingBalances = true;
+      _balances.clear();
     });
 
 
@@ -161,9 +163,10 @@ class _BalancesState extends State<Balances> {
 
     setState(() {
       _loadingBalances = true;
+      _balances.clear();
     });
 
-    LocalDatabase.loadCurrencies(1).then((currencies) {
+    LocalDatabase.loadCurrencies(1, limit: null).then((currencies) {
 
       if(currencies.length > 0) {
 
@@ -255,9 +258,10 @@ class _BalancesState extends State<Balances> {
 
     setState(() {
       _loadingBalances = true;
+      _balances.clear();
     });
 
-    LocalDatabase.loadCurrencies(2).then((currencies) {
+    LocalDatabase.loadCurrencies(2, limit: null).then((currencies) {
 
       if(currencies.length > 0) {
 
@@ -297,6 +301,7 @@ class _BalancesState extends State<Balances> {
 
     setState(() {
       _loadingBalances = true;
+
     });
 
 
@@ -338,6 +343,7 @@ class _BalancesState extends State<Balances> {
   void loadShares() {
     setState(() {
       _loadingBalances = true;
+      _balances.clear();
     });
 
     LocalDatabase.loadCurrencies(3, limit: 50).then((currencies) {
@@ -444,6 +450,7 @@ class _BalancesState extends State<Balances> {
 
     setState(() {
       _loadingBalances = true;
+      _balances.clear();
     });
 
     int shareCount = 0;
@@ -489,7 +496,7 @@ class _BalancesState extends State<Balances> {
       _renderState = !_renderState;
     });
 
-    LocalDatabase.insertAll(_sharesList, 2);
+    LocalDatabase.insertAll(_sharesList, 3);
     print("Shares loaded remotely");
   }
 
@@ -537,9 +544,26 @@ class _BalancesState extends State<Balances> {
       _renderState = !_renderState;
     });
 
-    LocalDatabase.insertAll(_sharesList, 2);
+    LocalDatabase.insertAll(_sharesList, 3);
     print("Shares loaded remotely");
   }
+
+  String get searchText {
+
+    if(type == 0) {
+      return loc(context, "search_fiat");
+    }else if(type == 1) {
+      return loc(context, "search_crypto");
+    }else if(type == 2) {
+      return loc(context, "search_asset");
+    }else {
+      return loc(context, "search_share");
+    }
+  }
+
+  String? _searchQuery;
+
+  TextEditingController _searchController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -561,46 +585,312 @@ class _BalancesState extends State<Balances> {
           Container(
             width: double.infinity,
             height: double.infinity,
-            child: _loadingBalances? Column(
+            child: Column(
               children: [
+
                 SizedBox(height: 20,),
 
                 Container(
                   width: double.infinity,
-                  height: 40,
+                  height: 45,
+                  margin: EdgeInsets.fromLTRB(20, 0, 20, 0),
+                  padding: EdgeInsets.fromLTRB(20, 0, 0, 0),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(45),
+                    boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05),
+                    spreadRadius: 1, blurRadius: 6, offset: Offset(0, 6))]
+                  ),
                   child: Align(
                     alignment: Alignment.center,
-                    child: FittedBox(
-                      child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(AppColors.secondary),),
-                    ),
-                  ),
-                )
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: TextFormField(
 
-              ],
-            ) : Container(
-              width: double.infinity,
-              height: double.infinity,
-              child: Column(
-                children: [
-                  SizedBox(height: 20,),
-                  Expanded(
-                    child: Container(
-                      margin: EdgeInsets.fromLTRB(20, 0, 20, 0),
-                      child: !_renderState? ListView(
-                        children: _balances,
-                      ) : Container(
-                        child: ListView(
-                          children: _balances,
+                            decoration: InputDecoration(
+                                border: InputBorder.none,
+                                hintText: searchText,
+                                hintStyle: TextStyle(color: AppColors.mediumGray)
+
+                            ),
+                            controller: _searchController,
+                            onChanged: (value) {
+                              if(value.isEmpty) {
+
+                                clearSearch();
+                              }else {
+                                setState(() {
+                                  _searchQuery = value;
+                                });
+                              }
+
+                            },
+                            onFieldSubmitted: (value) {
+
+                              setState(() {
+                                _searchQuery = value;
+                              });
+
+                              performSearch();
+
+                            },
+                          ),
                         ),
-                      ),
+
+                        !_searchResult? IconButton(onPressed: () {
+
+                          performSearch();
+
+                        }, icon: Icon(Icons.search)) : IconButton(onPressed: () {
+
+                          clearSearch();
+
+                        }, icon: Icon(Icons.clear))
+                      ],
                     )
+                  ),
+                ),
+
+
+                Expanded(
+                  child: _loadingBalances? Column(
+                    children: [
+                      SizedBox(height: 20,),
+
+                      Container(
+                        width: double.infinity,
+                        height: 40,
+                        child: Align(
+                          alignment: Alignment.center,
+                          child: FittedBox(
+                            child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(AppColors.secondary),),
+                          ),
+                        ),
+                      )
+
+                    ],
+                  ) : Container(
+                    width: double.infinity,
+                    height: double.infinity,
+                    child: Column(
+                      children: [
+                        SizedBox(height: 20,),
+                        Expanded(
+                            child: Container(
+                              margin: EdgeInsets.fromLTRB(20, 0, 20, 0),
+                              child: !_renderState? ListView(
+                                children: _balances,
+                              ) : Container(
+                                child: ListView(
+                                  children: _balances,
+                                ),
+                              ),
+                            )
+                        )
+                      ],
+                    ),
                   )
-                ],
-              ),
+                )
+              ],
             )
           )
         ],
       ),
     );
+  }
+
+
+
+  void performSearch() {
+    if(type == 0) {
+      searchFiat();
+
+    }else if(type == 1) {
+      searchCrypto();
+    }else if(type == 2) {
+      searchAssets();
+    }else if(type == 3) {
+      searchShares();
+    }
+  }
+
+  void clearSearch() {
+    setState(() {
+      _searchResult = false;
+      _searchQuery = null;
+      _searchController.clear();
+    });
+    if(type == 0) {
+      loadFiatCurrencies();
+    }else if(type == 1) {
+      loadCryptoCurrencies();
+    }else if(type == 2) {
+      loadAssetsCurrencies();
+    }else if(type == 3) {
+      loadSharesRemotely();
+    }
+  }
+
+  bool _searchResult = false;
+
+
+  void searchFiat () {
+
+    setState(() {
+      _loadingBalances = true;
+      _balances.clear();
+    });
+
+    LocalDatabase.searchCurrencies(0, _searchQuery as String).then((currencies) {
+      for(CurrencyData fiat in currencies) {
+        BalanceData balanceData = BalanceData(amount: 0.0,
+            currencyName: fiat.name, currencyCode: fiat.code,
+            isFiat: false,
+            created: DateTime.now());
+
+        _balances.add(BalanceItem(data: balanceData,
+          onPressed: (data, exchange) {
+
+            Navigator.push(context, MaterialPageRoute(builder: (context) =>
+                DisplayBalance(data: data, exchangeData: exchange, onBalanceOpened: () {
+
+                },)));
+          }, onlyShow: true,));
+        _balances.add(SizedBox(height: 20,));
+
+
+      }
+
+
+      setState(() {
+        _loadingBalances = false;
+        _renderState = !_renderState;
+        _searchResult = true;
+      });
+
+      print("Fiats searched!");
+
+
+    });
+
+
+  }
+
+  void searchCrypto() {
+    setState(() {
+      _loadingBalances = true;
+      _balances.clear();
+    });
+
+    LocalDatabase.searchCurrencies(1, _searchQuery as String).then((currencies) {
+      for(CurrencyData crypto in currencies) {
+        BalanceData balanceData = BalanceData(amount: 0.0,
+            currencyName: crypto.name, currencyCode: crypto.code,
+            isFiat: false,
+            created: DateTime.now());
+
+        _balances.add(BalanceItem(data: balanceData,
+          onPressed: (data, exchange) {
+
+            Navigator.push(context, MaterialPageRoute(builder: (context) =>
+                DisplayBalance(data: data, exchangeData: exchange, onBalanceOpened: () {
+
+                },)));
+          }, onlyShow: true,));
+        _balances.add(SizedBox(height: 20,));
+
+
+      }
+
+
+      setState(() {
+        _loadingBalances = false;
+        _renderState = !_renderState;
+        _searchResult = true;
+      });
+
+      print("Crypto searched!");
+
+
+    });
+  }
+
+  void searchAssets () {
+    setState(() {
+      _loadingBalances = true;
+      _balances.clear();
+    });
+
+    LocalDatabase.searchCurrencies(2, _searchQuery as String).then((currencies) {
+      for(CurrencyData assets in currencies) {
+        BalanceData balanceData = BalanceData(amount: 0.0,
+            currencyName: assets.name, currencyCode: assets.code,
+            isFiat: false,
+            created: DateTime.now());
+
+        _balances.add(BalanceItem(data: balanceData,
+          onPressed: (data, exchange) {
+
+            Navigator.push(context, MaterialPageRoute(builder: (context) =>
+                DisplayBalance(data: data, exchangeData: exchange, onBalanceOpened: () {
+
+                },)));
+          }, onlyShow: true,));
+        _balances.add(SizedBox(height: 20,));
+
+
+      }
+
+
+      setState(() {
+        _loadingBalances = false;
+        _renderState = !_renderState;
+        _searchResult = true;
+      });
+
+      print("Assets searched!");
+
+
+    });
+  }
+
+  void searchShares () {
+    setState(() {
+      _loadingBalances = true;
+      _balances.clear();
+    });
+
+    LocalDatabase.searchCurrencies(3, _searchQuery as String).then((currencies) {
+      for(CurrencyData shares in currencies) {
+        BalanceData balanceData = BalanceData(amount: 0.0,
+            currencyName: shares.name, currencyCode: shares.code,
+            isFiat: false,
+            created: DateTime.now());
+
+        _balances.add(BalanceItem(data: balanceData,
+          onPressed: (data, exchange) {
+
+            Navigator.push(context, MaterialPageRoute(builder: (context) =>
+                DisplayBalance(data: data, exchangeData: exchange, onBalanceOpened: () {
+
+                },)));
+          }, onlyShow: true,));
+        _balances.add(SizedBox(height: 20,));
+
+
+      }
+
+
+      setState(() {
+        _loadingBalances = false;
+        _renderState = !_renderState;
+        _searchResult = true;
+      });
+
+      print("Shares searched!");
+
+
+    });
   }
 }

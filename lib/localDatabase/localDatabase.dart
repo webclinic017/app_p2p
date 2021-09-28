@@ -23,6 +23,10 @@ class LocalDatabase {
     return "assets";
   }
 
+  static String get sharesTableName {
+    return "shares";
+  }
+
 
   
   
@@ -46,7 +50,7 @@ class LocalDatabase {
     var documentsDirectory = await getApplicationDocumentsDirectory();
 
     String path = join(documentsDirectory.path, _databaseName);
-
+    await deleteDatabase(path);
     return openDatabase(path, version: 1, onCreate: (db, version) async{
 
       await db.execute("CREATE TABLE $fiatsTableName ("
@@ -62,6 +66,12 @@ class LocalDatabase {
           ")");
 
       await db.execute("CREATE TABLE $assetsTableName ("
+          "id INTEGER PRIMARY KEY,"
+          "code TEXT,"
+          "name TEXT"
+          ")");
+
+      await db.execute("CREATE TABLE $sharesTableName ("
           "id INTEGER PRIMARY KEY,"
           "code TEXT,"
           "name TEXT"
@@ -111,6 +121,8 @@ class LocalDatabase {
       tableName = "$cryptosTableName";
     }else if(type == 2) {
       tableName = "$assetsTableName";
+    }else if(type == 3) {
+      tableName = "$sharesTableName";
     }
 
 
@@ -134,12 +146,19 @@ class LocalDatabase {
       tableName = "$cryptosTableName";
     }else if(type == 2) {
       tableName = "$assetsTableName";
+    }else if(type == 3) {
+      tableName = "$sharesTableName";
     }
 
 
+    List<Map<String, Object?>> maps = [];
 
+    if(limit != null) {
+      maps = await db.query(tableName, limit: limit);
+    }else {
+      maps = await db.query(tableName);
+    }
 
-    List<Map<String, Object?>> maps = await db.query(tableName, limit: limit);
 
     return List.generate(maps.length, (index) => CurrencyData(
       name: maps[index]["name"] as String,
@@ -160,6 +179,8 @@ class LocalDatabase {
       tableName = "$cryptosTableName";
     }else if(type == 2) {
       tableName = "$assetsTableName";
+    }else if(type == 3) {
+      tableName = "$sharesTableName";
     }
 
 
@@ -173,7 +194,37 @@ class LocalDatabase {
     ));
 
   }
-  
+
+
+  static Future<List<CurrencyData>> searchCurrencies(int type, String query) async{
+    var db = await database;
+
+    String tableName = "$fiatsTableName";
+
+    if(type == 0) {
+      tableName = "$fiatsTableName";
+    }else if(type == 1) {
+      tableName = "$cryptosTableName";
+    }else if(type == 2) {
+      tableName = "$assetsTableName";
+    }else if(type == 3) {
+      tableName = "$sharesTableName";
+    }
+
+
+
+
+    List<Map<String, Object?>> maps = await db.query(tableName,
+    where: "name LIKE ?", whereArgs: ["%${query}%"] );
+
+    return List.generate(maps.length, (index) => CurrencyData(
+        name: maps[index]["name"] as String,
+        code: maps[index]["code"] as String
+    ));
+
+  }
+
+
   
   
   

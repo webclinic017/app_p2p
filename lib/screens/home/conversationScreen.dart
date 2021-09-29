@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:math';
 
+import 'package:agora_rtc_engine/rtc_engine.dart';
 import 'package:app_p2p/components/loadMore.dart';
 import 'package:app_p2p/components/loader.dart';
 import 'package:app_p2p/components/messageItem.dart';
@@ -15,6 +16,11 @@ import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:permission_handler/permission_handler.dart';
+
+
+const appId = "a3f3939904744fef897606d858e8b628";
+const token = "2c290d024fd24b9c861e7db8d576f720";
 
 class ConversationScreen extends StatefulWidget {
 
@@ -68,16 +74,56 @@ class _ConversationScreenState extends State<ConversationScreen> {
 
   }
 
+  RtcEngine? _engine;
+  bool _localUserJoined = false;
+  String? _remoteUid;
+
   @override
   void initState() {
     super.initState();
     loadOtherData();
     loadMessages();
 
+
+
     Future.delayed(Duration(milliseconds: 500), () {
       _scrollController.animateTo(_scrollController.position.maxScrollExtent,
           duration: Duration(milliseconds: 300), curve: Curves.ease);
     });
+  }
+
+
+  Future<void> initAgora() async {
+    // retrieve permissions
+    await [Permission.microphone, Permission.camera].request();
+
+    //create the engine
+    _engine = await RtcEngine.create(appId);
+    await _engine?.enableVideo();
+    _engine?.setEventHandler(
+      RtcEngineEventHandler(
+        joinChannelSuccess: (String channel, int uid, int elapsed) {
+          print("local user $uid joined");
+          setState(() {
+            _localUserJoined = true;
+          });
+        },
+        userJoined: (int uid, int elapsed) {
+          print("remote user $uid joined");
+          setState(() {
+            _remoteUid = uid as String;
+          });
+        },
+        userOffline: (int uid, UserOfflineReason reason) {
+          print("remote user $uid left channel");
+          setState(() {
+            _remoteUid = null;
+          });
+        },
+      ),
+    );
+
+    await _engine?.joinChannel(token, data?.id as String, null, 0);
   }
 
 
@@ -226,6 +272,8 @@ class _ConversationScreenState extends State<ConversationScreen> {
           actions: [
 
             IconButton(onPressed: () {
+
+              initAgora();
 
             }, icon: Icon(Icons.call)),
 

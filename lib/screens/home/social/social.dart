@@ -9,6 +9,7 @@ import 'package:app_p2p/database/userData.dart';
 import 'package:app_p2p/localizations/appLocalizations.dart';
 import 'package:app_p2p/screens/home/conversationScreen.dart';
 import 'package:app_p2p/screens/home/social/components/qualificationUser.dart';
+import 'package:app_p2p/screens/home/social/components/ratingPanel.dart';
 import 'package:app_p2p/screens/login/login.dart';
 import 'package:app_p2p/utilities/appColors.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -36,6 +37,10 @@ class _SocialState extends State<Social> {
 
   bool _isLoading = false;
   String _loadMessage = "";
+
+
+
+
 
 
 
@@ -85,7 +90,7 @@ class _SocialState extends State<Social> {
             loadNearbyUsers();
 
           },));
-          _nearbyUsers.add(SizedBox(height: 10,));
+
         });
 
         _lastDoc = doc;
@@ -168,7 +173,7 @@ class _SocialState extends State<Social> {
               loadNearbyUsers();
 
             },));
-          _nearbyUsers.add(SizedBox(height: 10,));
+
         });
 
         _lastDoc = doc;
@@ -228,8 +233,6 @@ class _SocialState extends State<Social> {
               child: Column(
                 children: [
 
-                  SizedBox(height: 20,),
-
 
                   Expanded(
                     child: _loadingNearbyUsers? Column(
@@ -248,16 +251,8 @@ class _SocialState extends State<Social> {
                         )
                       ],
                     ) : (_nearbyUsers.length > 0? (
-                        _renderState? SingleChildScrollView(
-                          child: Column(
-                            children: _nearbyUsers,
-                          ),
-                        ) : Container(
-                          child: SingleChildScrollView(
-                            child: Column(
-                              children: _nearbyUsers,
-                            ),
-                          ),
+                        PageView(
+                          children: _nearbyUsers,
                         )
                     ) : Column(
                       children: [
@@ -284,6 +279,8 @@ class _SocialState extends State<Social> {
                 ],
               ),
             ),
+
+
 
             _isLoading? Loader(loadMessage: _loadMessage,) : Container()
           ],

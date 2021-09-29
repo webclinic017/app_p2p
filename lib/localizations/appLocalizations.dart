@@ -303,7 +303,15 @@ class AppLocalizations {
       "received from" : "received from",
       "sent" : "Sent",
       "received" : 'Received',
-      "no_transactions_yet" : "No transactions yet"
+      "no_transactions_yet" : "No transactions yet",
+      "enter_rating" : "Enter rating",
+      "stars" : "stars",
+      "your_new_rating" : "Your new rating",
+      "comment" : "Comment",
+      "enter_the_comment" : "Enter the comment",
+      "send_rate_uppercase" : "SEND RATE",
+      "by_email" : "By Email"
+
 
 
 
@@ -587,7 +595,14 @@ class AppLocalizations {
       "received from" : "recibidos de",
       "sent" : "Enviado",
       "received" : 'Recibido',
-      "no_transactions_yet" : "Sin transacciones aún"
+      "no_transactions_yet" : "Sin transacciones aún",
+      "enter_rating" : "Ingresa calificación",
+      "stars" : "estrellas",
+      "your_new_rating" : "Tu nueva calificación",
+      "comment" : "Comentario",
+      "enter_the_comment" : "Ingresa el comentario",
+      "send_rate_uppercase" : "ENVIAR CALIFICACIÓN",
+      "by_email" : "Por Correo"
 
 
 

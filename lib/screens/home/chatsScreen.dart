@@ -6,12 +6,15 @@ import 'package:app_p2p/database/messageData.dart';
 import 'package:app_p2p/localDatabase/localDatabase.dart';
 import 'package:app_p2p/localizations/appLocalizations.dart';
 import 'package:app_p2p/screens/home/bluetooth/bluetoothScanner.dart';
+import 'package:app_p2p/screens/home/bluetooth/chatPage.dart';
 import 'package:app_p2p/screens/home/conversationScreen.dart';
 import 'package:app_p2p/screens/home/newChat.dart';
 import 'package:app_p2p/screens/login/login.dart';
 import 'package:app_p2p/utilities/appColors.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 
 class ChatsScreen extends StatefulWidget {
 
@@ -30,6 +33,11 @@ class _ChatsScreenState extends State<ChatsScreen> {
 
   _ChatsScreenState({this.onUnreadMessages});
 
+  BluetoothState _bluetoothState = BluetoothState.UNKNOWN;
+
+  String _address = "...";
+  String _name = "...";
+
 
   int _loadLimit = 20;
   List<Widget> _chats = [];
@@ -38,6 +46,11 @@ class _ChatsScreenState extends State<ChatsScreen> {
   bool renderState = false;
 
   int _unreadMessages = 0;
+
+  BluetoothDevice? selectedDevice;
+
+  String CHANNEL = "com.soflop.app_p2p/bluetooth";
+  MethodChannel? platform;
 
   void loadChats() {
     var firestore = FirebaseFirestore.instance;
@@ -56,21 +69,6 @@ class _ChatsScreenState extends State<ChatsScreen> {
         _chats.add(SizedBox(height: 20,));
       });
 
-      setState(() {
-        _chats.add(Button(width: double.infinity, height: 50,
-        color: AppColors.secondary,
-        text: loc(context, "find_devices_uppercase"),
-        margin: 20,
-        onPressed: () {
-
-          Navigator.push(context, MaterialPageRoute(builder: (context) =>
-          BluetoothScanner()));
-        },),);
-
-        setState(() {
-          _chats.add(SizedBox(height: 10,));
-        });
-      });
 
       for(var doc in event.docs) {
         ChatData chatData = ChatData.fromDoc(doc);
@@ -113,9 +111,74 @@ class _ChatsScreenState extends State<ChatsScreen> {
   void initState() {
     loadChats();
 
+    initBluetooth();
+
+   
+    
+    initBluetooth();
+
     super.initState();
   }
 
+
+  void initBluetooth() async {
+    FlutterBluetoothSerial.instance.state.then((state) {
+      setState(() {
+        _bluetoothState = state;
+      });
+    });
+
+    Future.doWhile(() async {
+      // Wait if adapter not enabled
+      if ((await FlutterBluetoothSerial.instance.isEnabled) == true) {
+        return false;
+      }
+      await Future.delayed(Duration(milliseconds: 0xDD));
+      return true;
+    }).then((_) {
+      // Update the address field
+      FlutterBluetoothSerial.instance.address.then((address) {
+        setState(() {
+          _address = address as String;
+        });
+      });
+    });
+
+    FlutterBluetoothSerial.instance.name.then((name) {
+      setState(() {
+        _name = name as String;
+      });
+    });
+
+    // Listen for futher state changes
+    FlutterBluetoothSerial.instance
+        .onStateChanged()
+        .listen((BluetoothState state) {
+      setState(() {
+        _bluetoothState = state;
+      });
+    });
+
+    platform = MethodChannel(CHANNEL);
+    
+    try {
+      var result = await platform?.invokeMethod("initAsBluetoothServer");
+      if(result == true) {
+        print("LISTENING!!");
+      }
+
+      
+    }catch(e) {
+      print("Error staring a server: ${e}");
+    }
+
+  }
+
+  @override
+  void dispose() {
+    FlutterBluetoothSerial.instance.setPairingRequestHandler(null);
+    super.dispose();
+  }
 
 
   @override
@@ -221,4 +284,16 @@ class _ChatsScreenState extends State<ChatsScreen> {
       ),
     );
   }
+
+
+  void _startChat(BuildContext context, BluetoothDevice server) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) {
+          return ChatPage(server: server);
+        },
+      ),
+    );
+  }
+
 }

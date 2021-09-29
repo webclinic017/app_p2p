@@ -77,6 +77,7 @@ class AppDatabase {
 
 
   static String ratings = "ratings";
+  static String comment = "comment";
 
   static String ratingsHistory = "ratingsHistory";
 
@@ -99,6 +100,7 @@ class AppDatabase {
   static String originBalance = "originBalance";
   static String destinationBalance = "destinationBalance";
   static String receiverID = "receiverID";
+
 
 
 }
